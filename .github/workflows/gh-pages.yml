@@ -28,9 +28,9 @@ jobs:
         run: npm run build:ghpages
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./docs/browser
 
       - name: Deploy to GitHub Pages (official)
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
