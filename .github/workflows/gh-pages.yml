@@ -4,13 +4,11 @@ on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+permissions: {}
 
 jobs:
-  build-deploy:
+  # Build job
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,9 +26,21 @@ jobs:
         run: npm run build:ghpages
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs/browser
 
-      - name: Deploy to GitHub Pages (official)
-        uses: actions/deploy-pages@v2
+  # Deploy job
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
