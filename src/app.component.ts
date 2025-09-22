@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { DetailsComponent } from './details.component';
 import { PeppolService } from './peppol.service';
 import { PeppolResponse, PeppolMatch } from './peppol.types';
-import { API_BASE, DEFAULTS, QUERY_KEYS, TEXT } from './app.config';
+import { API_BASE, API_PATH, DEFAULTS, QUERY_KEYS, TEXT } from './app.config';
 import { PAGE_SIZES } from './design.tokens';
 import { COUNTRY_NAMES, EUROPE_ALPHA2 } from './app.constants';
 
@@ -110,61 +110,53 @@ export class AppComponent implements OnInit {
   }
 
   performSearch() {
-  let url = `${API_BASE}?`;
     const params = new URLSearchParams();
-    
+
     const searchTerms = this.searchQuery.trim() ? this.searchQuery.replace(/\s+/g, '+') : '';
     params.append('q', searchTerms);
-    
+
     if (this.countryFilter) {
       params.append(QUERY_KEYS.COUNTRY, this.countryFilter);
     }
-    
-  params.append(QUERY_KEYS.RESULT_PAGE_INDEX, this.currentPage.toString());
-  params.append(QUERY_KEYS.RESULT_PAGE_COUNT, this.pageSize.toString());
-    
-    url += params.toString();
-    // If we're running on a non-localhost origin (i.e., GitHub Pages), route
-    // the request through the public CORS proxy AllOrigins to avoid browser CORS.
-    // Keep direct requests when developing locally so the dev proxy still works.
+
+    params.append(QUERY_KEYS.RESULT_PAGE_INDEX, this.currentPage.toString());
+    params.append(QUERY_KEYS.RESULT_PAGE_COUNT, this.pageSize.toString());
+
+    const paramsStr = params.toString();
+
+    // Build the request URL depending on environment:
+    // - Local dev: use same-origin path so the Angular dev-server proxy (proxy.conf.json)
+    //   can forward the request to the upstream API and avoid browser CORS.
+    // - Non-local (GitHub Pages): route through public CORS proxy (AllOrigins).
+    let url: string;
     try {
       const loc = window.location.origin;
       const isLocal = loc.startsWith('http://localhost') || loc.startsWith('http://127.0.0.1') || loc.startsWith('https://localhost') || loc.startsWith('https://127.0.0.1');
-      if (!isLocal) {
-        const encoded = encodeURIComponent(url);
+
+      if (isLocal) {
+        // Use API_PATH (same-origin) so dev proxy handles forwarding
+        url = `${API_PATH}?${paramsStr}`;
+      } else {
+        const full = `${API_BASE}?${paramsStr}`;
+        const encoded = encodeURIComponent(full);
         url = `https://api.allorigins.win/get?url=${encoded}`;
       }
     } catch (e) {
-      // If window is unavailable for any reason, fall back to the original URL
+      // If window is unavailable or something goes wrong, fall back to absolute API URL
       console.warn('Could not detect window.location; using direct API URL');
+      url = `${API_BASE}?${paramsStr}`;
     }
     
-    const headers = new HttpHeaders({
-      'Accept': 'application/json'
-    });
-    
-    this.http.get(url, { headers, observe: 'response' }).subscribe({
-      next: (response) => {
-        try {
-          const contentType = response.headers.get('content-type');
-          if (!contentType || !contentType.includes('application/json')) {
-            throw new Error('Server returned non-JSON response');
-          }
-          
-          this.result = response.body as PeppolResponse;
-          this.searchPerformed = true;
-          this.applyFilters();
-        } catch (e) {
-          console.error('Error processing response:', e);
-          console.warn('The server returned an invalid response. See console for details.');
-          this.searchPerformed = true;
-          this.result = null;
-          this.filteredMatches = [];
-        }
+  // Reuse the previously constructed `params` object for the service call
+  this.peppol.fetchSearch(params).subscribe({
+      next: (data) => {
+        this.result = data;
+        this.searchPerformed = true;
+        this.applyFilters();
       },
-      error: (error) => {
-  console.error('Error fetching data:', error);
-  console.warn('Error fetching data. See console for details.');
+      error: (err) => {
+        console.error('Error fetching data:', err);
+        console.warn('Error fetching data. See console for details.');
         this.searchPerformed = true;
         this.result = null;
         this.filteredMatches = [];

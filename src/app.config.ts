@@ -1,4 +1,6 @@
 export const API_BASE = 'https://directory.peppol.eu/search/1.0/json';
+// Same-origin path derived from API_BASE (used by the dev-server proxy)
+export const API_PATH = API_BASE.replace(/^https?:\/\/[^/]+/, '');
 
 import { DEFAULT_PAGE_SIZE } from './design.tokens';
 
