@@ -1,4 +1,4 @@
-export const API_BASE = '/search/1.0/json';
+export const API_BASE = 'https://directory.peppol.eu/search/1.0/json';
 
 import { DEFAULT_PAGE_SIZE } from './design.tokens';
 
