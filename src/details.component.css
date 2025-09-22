@@ -43,7 +43,7 @@
 
 .details-content {
   display: grid;
-  gap: 12px; /* tightened spacing between detail sections */
+  gap: 4px; /* tighter spacing between detail sections */
   grid-template-columns: 1fr;
 }
 
@@ -55,7 +55,7 @@
   border: none;
   box-shadow: none;
   overflow-wrap: anywhere;
-  margin-bottom: 6px;
+  margin-bottom: 0; /* rely on grid gap for separation */
 }
 
 /* Apply consistent spacing for direct children inside a detail section */
@@ -122,7 +122,7 @@
 .documents-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .doc-card {
@@ -138,7 +138,7 @@
 .entities-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .entity-card {
@@ -170,13 +170,18 @@
   color: var(--muted-weak);
 }
 
-.doc-title { font-weight: 600; color: var(--text); margin-bottom: 4px }
+/* Use normalized card typography */
+.doc-title { margin-bottom: 6px }
 .doc-subtitle { color: var(--muted); font-size: 13px }
+
+.card-title { font-weight: 700; font-size: 15px; color: var(--text); }
+.card-subtitle { font-weight: 500; font-size: 13px; color: var(--muted); }
+.card-meta { font-size: 13px; color: var(--muted-weak); }
 
 .doc-scheme { color: var(--muted-weak); font-size: 13px; margin-top: 4px }
 
 .doc-subtitle-block { margin-top: 4px }
-.doc-title { font-weight: 600; color: var(--text); margin-bottom: 4px }
+.doc-title { font-weight: 700; color: var(--text); margin-bottom: 4px }
 
 /* Tighter spacing for document detail rows so labels/values sit closer vertically */
 .doc-card .detail-row { margin-bottom: 6px; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }

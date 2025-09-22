@@ -74,8 +74,14 @@
 .match-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,36,0.05) }
 
 .match-company { font-weight: 700; margin-bottom: 6px }
+.match-company { margin-bottom: 6px }
 .match-country { color: var(--muted); margin-bottom: 4px }
 .match-participant { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace }
+
+/* Normalized card typography */
+.card-title { font-weight: 700; font-size: 15px; color: var(--text); }
+.card-subtitle { font-weight: 500; font-size: 13px; color: var(--muted); }
+.card-meta { font-size: 13px; color: var(--muted-weak); }
 
 /* Pagination */
 .pagination-container { margin-top: 6px }

@@ -48,23 +48,20 @@
     <!-- results header removed (counts shown at bottom) -->
     
     <div class="match-cards" *ngIf="filteredMatches.length > 0">
-      <div 
-        class="match-card" 
-        *ngFor="let match of filteredMatches"
-        (click)="selectMatch(match)">
-  <div class="match-company">{{ getCompanyName(match) }}</div>
-        <div class="match-country">
-          <span class="country-info">
-            {{ getCountryName(getCountryCode(match)) }}
-            <img [src]="getFlagUrl(getCountryCode(match))" 
-                 [alt]="getCountryCode(match) + ' flag'" 
-                 class="country-flag">
-          </span>
-        </div>
-        <div class="match-participant">
-          <div>{{ getCompanyLabel(match) }}</div>
-        </div>
-      </div>
+          <div 
+            class="match-card" 
+            *ngFor="let match of filteredMatches"
+            (click)="selectMatch(match)">
+            <div class="card-title">{{ getCompanyName(match) }}</div>
+            <div class="card-subtitle">
+              <span class="country-info">{{ getCountryName(getCountryCode(match)) }}
+                <img [src]="getFlagUrl(getCountryCode(match))" [alt]="getCountryCode(match) + ' flag'" class="country-flag">
+              </span>
+            </div>
+            <div class="card-meta">
+              <div>{{ getCompanyLabel(match) }}</div>
+            </div>
+          </div>
     </div>
     
     <!-- Pagination -->

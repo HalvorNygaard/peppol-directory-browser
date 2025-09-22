@@ -17,7 +17,7 @@
         <div *ngFor="let ent of getEntities(); let i = index" class="entity-card">
           <div class="entity-header">
             <div>
-              <div class="entity-title">{{ ent.primaryName || ('Entity ' + (i + 1)) }}</div>
+              <div class="card-title">{{ ent.primaryName || ('Entity ' + (i + 1)) }}</div>
             </div>
           </div>
 
@@ -100,14 +100,14 @@
           <div class="doc-row">
             <div class="doc-body">
               <div class="doc-value">
-                <div class="doc-title" [title]="dd.versionTooltip">{{ dd.title }}</div>
+                <div class="card-title" [title]="dd.versionTooltip">{{ dd.title }}</div>
                 <div *ngIf="dd.scheme" class="detail-row">
                   <label>Document Schema</label>
-                  <div class="value" [title]="dd.originalScheme">{{ dd.scheme }}</div>
+                  <div class="card-subtitle value" [title]="dd.originalScheme">{{ dd.scheme }}</div>
                 </div>
                 <div *ngIf="dd.subtitle" class="detail-row">
                   <label>Specification</label>
-                  <div class="value" [title]="dd.originalCustomization">{{ dd.subtitle }}</div>
+                  <div class="card-meta value" [title]="dd.originalCustomization">{{ dd.subtitle }}</div>
                 </div>
               </div>
             </div>
