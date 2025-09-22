@@ -124,6 +124,20 @@ export class AppComponent implements OnInit {
   params.append(QUERY_KEYS.RESULT_PAGE_COUNT, this.pageSize.toString());
     
     url += params.toString();
+    // If we're running on a non-localhost origin (i.e., GitHub Pages), route
+    // the request through the public CORS proxy AllOrigins to avoid browser CORS.
+    // Keep direct requests when developing locally so the dev proxy still works.
+    try {
+      const loc = window.location.origin;
+      const isLocal = loc.startsWith('http://localhost') || loc.startsWith('http://127.0.0.1') || loc.startsWith('https://localhost') || loc.startsWith('https://127.0.0.1');
+      if (!isLocal) {
+        const encoded = encodeURIComponent(url);
+        url = `https://api.allorigins.win/get?url=${encoded}`;
+      }
+    } catch (e) {
+      // If window is unavailable for any reason, fall back to the original URL
+      console.warn('Could not detect window.location; using direct API URL');
+    }
     
     const headers = new HttpHeaders({
       'Accept': 'application/json'
