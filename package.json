@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "build:ghpages": "ng build --configuration production --base-href /peppol-directory-browser/ --output-path docs"
   },
   "dependencies": {
   "@angular/animations": "^20.3.0",
