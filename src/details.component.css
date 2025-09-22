@@ -48,13 +48,14 @@
 }
 
 .detail-section {
-  background: var(--section-surface);
-  padding: 16px; /* slightly reduced padding */
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  box-shadow: var(--card-shadow-weak);
+  /* Remove subsection visual treatment so items sit directly in the main card.
+     Keep spacing but avoid additional background, border or shadow. */
+  background: transparent;
+  padding: 8px 0;
+  border: none;
+  box-shadow: none;
   overflow-wrap: anywhere;
-  margin-bottom: 4px; /* reduce space between sections */
+  margin-bottom: 6px;
 }
 
 /* Apply consistent spacing for direct children inside a detail section */
@@ -125,12 +126,13 @@
 }
 
 .doc-card {
+  /* Match search result card styles for consistency */
   background: var(--surface);
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow-weak);
-  opacity: 0.98;
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 
 .entities-list {
@@ -141,14 +143,17 @@
 
 .entity-card {
   background: var(--surface);
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow-weak);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 
 .entity-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px }
 .entity-body { display: block }
+
+.doc-card:hover, .entity-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,36,0.05) }
 
 .doc-row {
   display: block;

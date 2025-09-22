@@ -11,6 +11,12 @@
   --accent: #2f4fbf; /* slightly more muted blue (less purple) */
   --card-shadow: 0 8px 20px rgba(15,23,36,0.05);
   --card-shadow-weak: 0 4px 12px rgba(15,23,36,0.035);
+  --card-shadow-subtle: 0 2px 8px rgba(15,23,36,0.04);
+  --card-border-soft: rgba(15,23,36,0.04);
+  --subsection-shadow: 0 6px 18px rgba(15,23,36,0.045);
+  --item-shadow: 0 8px 24px rgba(15,23,36,0.055);
+  /* lighter subsection surface for subtler separation */
+  --subsection-surface: #fcfcfd;
   --card-border: rgba(15,23,36,0.06);
   --radius: 10px;
 }
