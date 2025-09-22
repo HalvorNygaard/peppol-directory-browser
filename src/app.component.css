@@ -1,0 +1,296 @@
+/* Consolidated app styles: minimal, modern, and easy to maintain */
+/* design tokens expected to be provided by global styles */
+
+.container {
+  max-width: 1000px;
+  margin: 16px auto;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.header-left { display:flex; align-items:center; gap:8px }
+.header-title {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.header-title-wrap { display:flex; flex-direction:column }
+.header-subtitle { font-size: 14px; font-weight: 500; color: var(--muted-weak); margin-top: 2px }
+
+/* Search area */
+.search-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.search-group { flex: 1 1 auto; min-width: 0; }
+.search-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(15,23,36,0.06);
+  border-radius: 8px;
+  background: var(--section-surface);
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.country-group { flex: 0 0 auto; }
+.country-select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(15,23,36,0.06);
+  background: var(--section-surface);
+  min-width: 140px;
+}
+
+
+/* Results */
+.results-list { margin-top: 8px; padding-top: 8px; padding-bottom: 48px }
+.match-cards { display: grid; gap: 10px }
+.match-card {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow-weak);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.match-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,36,0.05) }
+
+.match-company { font-weight: 700; margin-bottom: 6px }
+.match-country { color: var(--muted); margin-bottom: 4px }
+.match-participant { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace }
+
+/* Pagination */
+.pagination-container { margin-top: 6px }
+.pagination-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 6px }
+.page-size-selector { display:flex; gap:8px; align-items:center }
+.page-btn { padding:6px 10px; border-radius:6px; border:1px solid var(--card-border); background:var(--surface) }
+.page-btn.active { background:var(--accent); color:var(--surface); border-color:var(--accent) }
+
+/* Details */
+.details-view { margin-top: 20px }
+.detail-section { margin-bottom: 18px }
+.section-title { margin: 0 0 8px 0 }
+.doc-card { padding: 8px 0 }
+.doc-title { font-weight: 600 }
+.doc-subtitle { color: var(--muted); font-size: 13px }
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  .search-form { flex-direction: column; gap: 10px }
+  .country-select { width: 100% }
+}
+.detail-section {
+  background-color: var(--section-surface);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+/* Normalize margins inside detail sections so top and bottom padding feels even */
+.detail-section > *:first-child {
+  margin-top: 0;
+}
+.detail-section > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Apply consistent spacing for direct children inside a detail section */
+.detail-section > * {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+.detail-section > *:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h3 {
+  margin: 0 0 12px 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.detail-row strong {
+  min-width: 150px;
+  color: var(--muted);
+}
+
+.detail-row span {
+  color: var(--text);
+  word-wrap: break-word;
+}
+
+/* Simplified back button: inline chevron with subtle hover */
+.back-button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.back-button:hover { background: rgba(15,23,36,0.04); color: var(--text); }
+.header-back { margin-right: 4px; }
+
+.document-types {
+  display: grid;
+  gap: 10px;
+}
+
+.doc-type {
+  background-color: var(--surface);
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid var(--accent);
+}
+
+.doc-type strong {
+  color: var(--accent);
+}
+
+.doc-type span {
+  word-wrap: break-word;
+}
+
+.no-data {
+  color: var(--muted-weak);
+  font-style: italic;
+  margin: 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  padding: 8px 0; /* smaller vertical footprint */
+}
+
+.pagination-container {
+  margin-top: 8px;
+}
+
+.pagination-container {
+  background: transparent;
+  border: none;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 6px; /* tighten vertical space */
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted-weak);
+}
+
+.page-size-selector select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  background: var(--surface);
+  font-size: 14px;
+}
+
+.page-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--card-border);
+  background-color: var(--surface);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: var(--section-surface);
+  border-color: var(--accent);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn.active {
+  background-color: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+}
+
+.results-info {
+  text-align: right;
+  margin: 0;
+  color: var(--muted-weak);
+  font-size: 14px;
+}
+
+.results-info p {
+  margin: 0;
+}
+
+.websites {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.website-link {
+  color: var(--accent);
+  padding-bottom: 8px;
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+.website-link:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .search-form { margin-bottom: 12px; align-items: stretch; flex-direction: column; gap: 12px; }
+  .pagination { flex-wrap: wrap; gap: 6px; }
+  .pagination-bar { gap: 8px; }
+  .page-btn { padding: 6px 10px; font-size: 12px; }
+  .details-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+/* Tighten pager spacing (override duplicates and ensure small footprint) */
+app-root .results-list { padding-bottom: 6px !important; }
+app-root .pagination-container { margin-top: 4px !important; margin-bottom: 4px !important; }
+app-root .pagination-bar { padding: 2px 6px !important; gap: 8px !important; }
+app-root .pagination { padding: 2px 0 !important; gap: 6px !important; }
+app-root .page-size-selector { margin: 0 !important; }
+app-root .page-btn { padding: 6px 8px !important; }

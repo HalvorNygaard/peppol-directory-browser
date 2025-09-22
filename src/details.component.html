@@ -1,0 +1,121 @@
+<section class="details-view">
+  <!-- header/title moved to app header; details now rely on main header -->
+  <div class="details-meta muted">
+    <span class="meta-register">{{ parsedParticipant.registerName }}</span>
+    <span>•</span>
+    <span class="meta-country">{{ getCountryName(getCountryCode()) }}</span>
+  </div>
+  <div class="details-meta-divider"></div>
+
+  <div class="details-content">
+    <!-- Header subtitle moved to app header; details content starts here -->
+
+    <!-- Entities: boxed list similar to Documents -->
+    <div class="detail-section">
+      <h3 class="section-title">Entities</h3>
+      <div class="entities-list">
+        <div *ngFor="let ent of getEntities(); let i = index" class="entity-card">
+          <div class="entity-header">
+            <div>
+              <div class="entity-title">{{ ent.primaryName || ('Entity ' + (i + 1)) }}</div>
+            </div>
+          </div>
+
+          <div class="entity-body">
+            <div class="detail-row">
+              <label>{{ LABELS.COUNTRY }}</label>
+              <div class="value country-info">
+                <img class="country-flag" [src]="ent.flagUrl" alt="flag" *ngIf="ent.countryCode" />
+                <span>{{ ent.countryName }}</span>
+              </div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.otherNames?.length">
+              <label>Other names</label>
+              <div class="value">
+                <div *ngFor="let n of ent.otherNames">
+                  <div>{{ n.value }} <span *ngIf="n.language" class="muted">({{ n.language }})</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.geoInfo">
+              <label>GeoInfo</label>
+              <div class="value">{{ ent.geoInfo }}</div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.identifiersFormatted?.length">
+              <label>Identifiers</label>
+              <div class="value">
+                <div *ngFor="let f of ent.identifiersFormatted">{{ f }}</div>
+              </div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.contacts?.length">
+              <label>Contacts</label>
+              <div class="value">
+                <div *ngFor="let c of ent.contacts" class="contact-card">
+                  <ng-container *ngIf="formatContact(c) as cc">
+                    <div class="contact-top"><span class="muted">{{ cc.roleLabel }}</span><strong *ngIf="cc.displayName">{{ cc.displayName }}</strong></div>
+                    <div class="contact-bottom">
+                      <span *ngIf="cc.phoneHref"><a [href]="cc.phoneHref">📞 {{ cc.phoneDisplay }}</a></span>
+                      <span *ngIf="cc.phoneHref && cc.emailHref"> &middot; </span>
+                      <span *ngIf="cc.emailHref"><a [href]="cc.emailHref">✉️ {{ cc.emailDisplay }}</a></span>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.additionalInfo">
+              <label>Additional Info</label>
+              <div class="value">{{ ent.additionalInfo }}</div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.regDate">
+              <label>{{ LABELS.REGISTERED }}</label>
+              <div class="value">{{ ent.regDate }}</div>
+            </div>
+
+            <div class="detail-row" *ngIf="ent.websites?.length">
+              <label>{{ TEXT.WEBSITES }}</label>
+              <div class="value">
+                <div *ngFor="let w of ent.websites">
+                  <a class="website-link" [href]="w.href" target="_blank" rel="noopener noreferrer">{{ w.text }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!getEntities()?.length" class="no-data">{{ TEXT.NO_RESULTS }}</div>
+      </div>
+    </div>
+
+    <!-- Documents section remains unchanged -->
+    <div class="detail-section">
+      <h3 class="section-title">Documents</h3>
+      <div class="documents-list">
+        <div *ngFor="let dd of getDocDisplays()" class="doc-card">
+          <div class="doc-row">
+            <div class="doc-body">
+              <div class="doc-value">
+                <div class="doc-title" [title]="dd.versionTooltip">{{ dd.title }}</div>
+                <div *ngIf="dd.scheme" class="detail-row">
+                  <label>Document Schema</label>
+                  <div class="value" [title]="dd.originalScheme">{{ dd.scheme }}</div>
+                </div>
+                <div *ngIf="dd.subtitle" class="detail-row">
+                  <label>Specification</label>
+                  <div class="value" [title]="dd.originalCustomization">{{ dd.subtitle }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!(match?.docTypes?.length)" class="no-data">{{ TEXT.NO_DOCUMENT_TYPES }}</div>
+      </div>
+    </div>
+
+  </div>
+</section>

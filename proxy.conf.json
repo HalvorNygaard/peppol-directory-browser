@@ -1,0 +1,7 @@
+{
+  "/search": {
+    "target": "https://directory.peppol.eu",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

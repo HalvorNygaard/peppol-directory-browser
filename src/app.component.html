@@ -1,0 +1,125 @@
+<div class="container">
+  <div class="header">
+      <div class="header-left">
+        <button *ngIf="selectedMatch" class="back-button header-back" (click)="backToList()">←</button>
+        <div class="header-title-wrap">
+          <h1 class="header-title">{{ selectedMatch ? getCompanyName(selectedMatch) : TEXT.APP_TITLE }}</h1>
+          <div *ngIf="selectedMatch" class="header-subtitle muted">{{ getCompanyLabel(selectedMatch) }}</div>
+        </div>
+      </div>
+    <div class="header-right"></div>
+    <!-- header action removed: using Enter to search, logo button not needed -->
+  </div>
+  
+  <!-- Search Form -->
+  <div class="search-form" *ngIf="!selectedMatch">
+    <div class="form-group search-group">
+      <input 
+        class="search-input"
+        type="text" 
+        id="searchQuery" 
+        [(ngModel)]="searchQuery" 
+        (keyup.enter)="search()">
+    </div>
+
+    <div class="form-group country-group">
+      <div class="country-filter-container">
+        <select 
+          id="countryFilter" 
+          class="country-select"
+          [(ngModel)]="countryFilter"
+          (change)="search()">
+          <option value="">{{ TEXT.ALL_COUNTRIES }}</option>
+          <optgroup label="Europe">
+            <option *ngFor="let c of europeCountries" [value]="c.code">{{ c.name }}</option>
+          </optgroup>
+          <option disabled>────────────</option>
+          <optgroup label="Rest of world">
+            <option *ngFor="let c of otherCountries" [value]="c.code">{{ c.name }}</option>
+          </optgroup>
+        </select>
+        <!-- clear filter button removed per UX preference -->
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div class="results-list" *ngIf="searchPerformed && !selectedMatch">
+    <!-- results header removed (counts shown at bottom) -->
+    
+    <div class="match-cards" *ngIf="filteredMatches.length > 0">
+      <div 
+        class="match-card" 
+        *ngFor="let match of filteredMatches"
+        (click)="selectMatch(match)">
+  <div class="match-company">{{ getCompanyName(match) }}</div>
+        <div class="match-country">
+          <span class="country-info">
+            {{ getCountryName(getCountryCode(match)) }}
+            <img [src]="getFlagUrl(getCountryCode(match))" 
+                 [alt]="getCountryCode(match) + ' flag'" 
+                 class="country-flag">
+          </span>
+        </div>
+        <div class="match-participant">
+          <div>{{ getCompanyLabel(match) }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="result">
+      <div class="pagination-bar">
+        <div class="page-size-selector">
+          <label for="pageSize">{{ TEXT.RESULTS_PER_PAGE }}</label>
+          <select 
+            id="pageSize" 
+            [(ngModel)]="pageSize"
+            (change)="onPageSizeChange()">
+            <option *ngFor="let s of pageSizes" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div class="pagination">
+          <button 
+            class="page-btn" 
+            [disabled]="(result['result-page-index'] ?? 0) === 0"
+            (click)="goToPage((result['result-page-index'] ?? 0) - 1)">
+            ← Previous
+          </button>
+          <ng-container *ngIf="getPaginationPages().length > 0">
+            <button 
+              *ngFor="let page of getPaginationPages()"
+              class="page-btn"
+              [class.active]="page === (result['result-page-index'] ?? 0)"
+              (click)="goToPage(page)">
+              {{ page + 1 }}
+            </button>
+          </ng-container>
+
+          <button 
+            class="page-btn"
+            [disabled]="(result['result-page-index'] ?? 0) >= getTotalPages() - 1"
+            (click)="goToPage((result['result-page-index'] ?? 0) + 1)">
+            Next →
+          </button>
+        </div>
+
+        <div class="results-info" *ngIf="result">
+          <p>Showing {{ (result['first-result-index'] ?? 0) + 1 }}-{{ (result['last-result-index'] ?? 0) + 1 }} of {{ result['total-result-count'] ?? 0 }} results</p>
+        </div>
+      </div>
+    </div>
+    <div class="no-results" *ngIf="filteredMatches.length === 0 && result">
+      <p>{{ TEXT.NO_RESULTS }}</p>
+      <p *ngIf="countryFilter" class="filter-suggestion">
+        Try removing the country filter or searching with different terms.
+      </p>
+    </div>
+  </div>
+
+
+
+  <!-- Details View -->
+  <app-details *ngIf="selectedMatch" [match]="selectedMatch" (back)="backToList()"></app-details>
+</div>

@@ -1,0 +1,217 @@
+.details-view {
+  margin-top: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.details-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.details-meta .meta-register { font-weight: 600; }
+
+.details-meta-divider {
+  height: 1px;
+  background: rgba(15,23,36,0.02);
+  border-radius: 2px;
+  margin: 12px 0;
+}
+
+/* hide the small banner line in details view (collapsed by default) */
+.details-meta, .details-meta-divider { display: none !important; }
+
+.details-header {
+  margin-bottom: 12px;
+  border: none;
+  outline: none;
+}
+
+.details-header .title {
+  margin: 0 0 6px 0;
+  font-size: 20px;
+}
+
+.details-header .subtitle {
+  margin: 0;
+  color: var(--muted-weak);
+  font-size: 13px;
+}
+
+.details-content {
+  display: grid;
+  gap: 12px; /* tightened spacing between detail sections */
+  grid-template-columns: 1fr;
+}
+
+.detail-section {
+  background: var(--section-surface);
+  padding: 16px; /* slightly reduced padding */
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-weak);
+  overflow-wrap: anywhere;
+  margin-bottom: 4px; /* reduce space between sections */
+}
+
+/* Apply consistent spacing for direct children inside a detail section */
+.detail-section > * {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+.detail-section > *:last-child {
+  margin-bottom: 0;
+}
+
+.entity-title {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.contact-line { margin: 4px 0 }
+.contact-line a { color: var(--accent); text-decoration: none }
+.contact-line a:hover { text-decoration: underline }
+
+/* Compact contact: role, name, and contacts inline with tight spacing */
+.contact-card { padding: 2px 0; display: flex; align-items: center; gap: 8px }
+.contact-top { font-size: 14px; color: var(--muted); }
+.contact-top strong { color: var(--text); margin-left: 6px }
+.contact-bottom { font-size: 13px; color: var(--muted-weak); display: inline-flex; gap: 8px }
+.contact-bottom a { color: var(--accent) }
+
+/* Documents: tighter card and monospace scheme/value */
+.doc-card { padding: 10px 12px }
+.doc-card .value { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; font-size: 13px; color: var(--muted-weak) }
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: start;
+  gap: 10px 18px;
+  margin-bottom: 14px;
+}
+
+.head-section {
+  display: none;
+}
+
+/* header subtitle moved to app header */
+
+.detail-row label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.detail-row .value {
+  color: var(--text);
+}
+
+.documents-list {
+  display: block;
+}
+
+.section-title {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-card {
+  background: var(--surface);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-weak);
+  opacity: 0.98;
+}
+
+.entities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.entity-card {
+  background: var(--surface);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-weak);
+}
+
+.entity-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px }
+.entity-body { display: block }
+
+.doc-row {
+  display: block;
+}
+
+.doc-body {
+  width: 100%;
+}
+
+.doc-value {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  color: var(--muted-weak);
+}
+
+.doc-title { font-weight: 600; color: var(--text); margin-bottom: 4px }
+.doc-subtitle { color: var(--muted); font-size: 13px }
+
+.doc-scheme { color: var(--muted-weak); font-size: 13px; margin-top: 4px }
+
+.doc-subtitle-block { margin-top: 4px }
+.doc-title { font-weight: 600; color: var(--text); margin-bottom: 4px }
+
+/* Tighter spacing for document detail rows so labels/values sit closer vertically */
+.doc-card .detail-row { margin-bottom: 6px; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
+
+/* Smaller, lighter labels for document rows */
+.doc-card .detail-row label { font-size: 12px; font-weight: 600; color: var(--muted); }
+.doc-card .detail-row .value { font-size: 13px; color: var(--muted-weak) }
+
+.no-data {
+  color: var(--muted-weak);
+  font-style: italic;
+  margin: 0;
+}
+
+.country-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.country-flag {
+  width: 24px;
+  height: 16px;
+  vertical-align: middle;
+  border: 1px solid var(--card-border);
+}
+
+.website-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.website-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+  .detail-row {
+    grid-template-columns: 1fr;
+  }
+
+}
