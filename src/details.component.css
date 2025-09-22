@@ -32,7 +32,7 @@
 
 .details-header .title {
   margin: 0 0 6px 0;
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .details-header .subtitle {
@@ -41,9 +41,9 @@
   font-size: 13px;
 }
 
-.details-content {
+details-content {
   display: grid;
-  gap: 4px; /* tighter spacing between detail sections */
+  gap: 8px; /* moderate spacing between detail sections */
   grid-template-columns: 1fr;
 }
 
@@ -61,7 +61,7 @@
 /* Apply consistent spacing for direct children inside a detail section */
 .detail-section > * {
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .detail-section > *:last-child {
   margin-bottom: 0;
@@ -101,17 +101,8 @@
 
 /* header subtitle moved to app header */
 
-.detail-row label {
-  font-weight: 600;
-  color: var(--muted);
-}
-
 .detail-row .value {
   color: var(--text);
-}
-
-.documents-list {
-  display: block;
 }
 
 .section-title {
@@ -122,13 +113,18 @@
 .documents-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px; /* tighter documents list spacing */
+}
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .doc-card {
   /* Match search result card styles for consistency */
   background: var(--surface);
-  padding: 16px;
+  padding: 10px 12px; /* compact vertical padding */
   border-radius: 12px;
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow-weak);
@@ -138,22 +134,22 @@
 .entities-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px; /* tighter entities list spacing */
 }
 
 .entity-card {
   background: var(--surface);
-  padding: 16px;
+  padding: 10px 12px; /* compact vertical padding */
   border-radius: 12px;
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow-weak);
   transition: transform .12s ease, box-shadow .12s ease;
 }
 
-.entity-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px }
-.entity-body { display: block }
+.entity-header { display: flex; align-items: center; gap: 8px; margin: 0 0 6px 0 }
+.entity-body { display: block; padding-top: 0 }
 
-.doc-card:hover, .entity-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,36,0.05) }
+.doc-card:hover, .entity-card:hover { transform: none; box-shadow: var(--card-shadow-weak); }
 
 .doc-row {
   display: block;
@@ -175,20 +171,26 @@
 .doc-subtitle { color: var(--muted); font-size: 13px }
 
 .card-title { font-weight: 700; font-size: 15px; color: var(--text); }
-.card-subtitle { font-weight: 500; font-size: 13px; color: var(--muted); }
-.card-meta { font-size: 13px; color: var(--muted-weak); }
+.card-subtitle { font-weight: 500; font-size: 14px; color: var(--muted); }
+.card-meta { font-size: 14px; color: var(--muted-weak); }
+.card-title { font-weight: 700; font-size: 16px; color: var(--text); }
 
 .doc-scheme { color: var(--muted-weak); font-size: 13px; margin-top: 4px }
 
 .doc-subtitle-block { margin-top: 4px }
 .doc-title { font-weight: 700; color: var(--text); margin-bottom: 4px }
 
-/* Tighter spacing for document detail rows so labels/values sit closer vertically */
-.doc-card .detail-row { margin-bottom: 6px; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
+/* Slightly more spacious document detail rows for readability */
+.doc-card .detail-row { margin: 6px 0; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
 
-/* Smaller, lighter labels for document rows */
-.doc-card .detail-row label { font-size: 12px; font-weight: 600; color: var(--muted); }
-.doc-card .detail-row .value { font-size: 13px; color: var(--muted-weak) }
+/* Labels and values adjusted for better legibility */
+.doc-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.doc-card .detail-row .value { font-size: 14px; color: var(--muted-weak) }
+
+/* Make entity detail rows follow the same spacing rules */
+.entity-card .detail-row { margin: 6px 0; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
+.entity-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.entity-card .detail-row .value { font-size: 14px; color: var(--muted-weak) }
 
 .no-data {
   color: var(--muted-weak);

@@ -4,7 +4,7 @@
 .container {
   max-width: 1000px;
   margin: 16px auto;
-  padding: 12px;
+  padding: 16px 20px; /* more left/right padding for breathing room */
   background: var(--surface);
   border-radius: 12px;
   box-shadow: var(--card-shadow);
@@ -17,7 +17,7 @@
   gap: 12px;
   padding: 0;
   margin-top: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 18px; /* increased spacing below header */
 }
 
 .header-left { display:flex; align-items:center; gap:8px }
@@ -26,6 +26,7 @@
   font-size: 1.375rem;
   font-weight: 600;
   color: var(--text);
+  padding-left: 4px; /* small left padding for title breathing room */
 }
 
 .header-title-wrap { display:flex; flex-direction:column }
@@ -51,21 +52,29 @@
 
 .country-group { flex: 0 0 auto; }
 .country-select {
-  padding: 10px 12px;
+  /* Use custom arrow so we can control spacing reliably across browsers */
+  padding: 8px 44px 8px 12px; /* extra right padding for custom arrow */
   border-radius: 8px;
   border: 1px solid rgba(15,23,36,0.06);
   background: var(--section-surface);
   min-width: 140px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path fill='%23747785' d='M6 8L0 0h12z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
 }
 
 
 /* Results */
-.results-list { margin-top: 8px; padding-top: 8px; padding-bottom: 48px }
-.match-cards { display: grid; gap: 10px }
+.results-list { margin-top: 12px; padding-top: 8px; padding-bottom: 24px }
+.match-cards { display: grid; gap: 8px }
 .match-card {
   border: 1px solid var(--card-border);
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px 16px; /* match details vertical spacing more closely */
   background: var(--surface);
   box-shadow: var(--card-shadow-weak);
   cursor: pointer;
@@ -73,15 +82,18 @@
 }
 .match-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,36,0.05) }
 
-.match-company { font-weight: 700; margin-bottom: 6px }
-.match-company { margin-bottom: 6px }
-.match-country { color: var(--muted); margin-bottom: 4px }
+.match-company { margin-bottom: 8px } /* increased 2px for extra breathing room */
+.match-country { color: var(--muted); margin-bottom: 6px }
+.match-card .card-subtitle { display: flex; align-items: center; gap: 8px; margin-bottom: 6px }
+.country-info { display: inline-flex; align-items: center; gap: 8px }
+.country-flag { width: 20px; height: 14px; margin: 0; border: 1px solid var(--card-border); }
+.match-card .card-meta { margin-top: 0 }
 .match-participant { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace }
 
 /* Normalized card typography */
-.card-title { font-weight: 700; font-size: 15px; color: var(--text); }
-.card-subtitle { font-weight: 500; font-size: 13px; color: var(--muted); }
-.card-meta { font-size: 13px; color: var(--muted-weak); }
+.card-title { font-weight: 700; font-size: 16px; color: var(--text); margin-bottom: 2px }
+.card-subtitle { font-weight: 500; font-size: 14px; color: var(--muted); }
+.card-meta { font-size: 14px; color: var(--muted-weak); }
 
 /* Pagination */
 .pagination-container { margin-top: 6px }
@@ -103,6 +115,8 @@
   .search-form { flex-direction: column; gap: 10px }
   .country-select { width: 100% }
 }
+
+/* remove dead pseudo-element approach (we now use a background SVG arrow) */
 .detail-section {
   background-color: var(--section-surface);
   padding: 16px;
