@@ -68,8 +68,13 @@ export class PeppolService {
   buildSearchUrl(params: URLSearchParams): string {
     const paramsStr = params.toString();
     if (!this.isLocalOrigin()) {
+      // Use AllOrigins `/raw` endpoint when running from a static host
+      // (e.g. GitHub Pages). `/raw` forwards the original response body
+      // without wrapping it in an envelope, which avoids extra parsing.
+      // Keep `unwrapProxyResponse` as a resilient fallback for other
+      // proxy implementations that may wrap responses.
       const direct = `${API_BASE}?${paramsStr}`;
-      return `https://api.allorigins.win/get?url=${encodeURIComponent(direct)}`;
+      return `https://api.allorigins.win/raw?url=${encodeURIComponent(direct)}`;
     }
   // Local dev: return a same-origin path (API_PATH) so the Angular dev-server
   // proxy (configured in proxy.conf.json) can forward the request to the upstream API.
