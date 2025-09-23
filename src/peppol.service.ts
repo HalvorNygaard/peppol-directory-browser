@@ -86,7 +86,16 @@ export class PeppolService {
     // Add a tiny cache-bust to avoid intermediate caches returning stale data.
     try { params.append('_ts', Date.now().toString()); } catch (e) {}
     const url = this.buildSearchUrl(params);
-    const headers = new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
+    // When using a public CORS proxy (AllOrigins) we must avoid sending
+    // non-simple request headers (like `Cache-Control`) because the proxy
+    // may not allow them in its CORS preflight response. Use a minimal set
+    // of headers for proxied requests; rely on the `_ts` cache-bust param
+    // to prevent stale cached responses.
+    const usingProxy = url.includes('allorigins.win') || !this.isLocalOrigin();
+    const headers = usingProxy
+      ? new HttpHeaders({ 'Accept': 'application/json' })
+      : new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
+
     return this.http.get<any>(url, { headers }).pipe(
       map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
     );
@@ -111,7 +120,11 @@ export class PeppolService {
     // cache-bust
     try { params.append('_ts', Date.now().toString()); } catch (e) {}
     const url = this.buildSearchUrl(params);
-    const headers = new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
+    const usingProxy = url.includes('allorigins.win') || !this.isLocalOrigin();
+    const headers = usingProxy
+      ? new HttpHeaders({ 'Accept': 'application/json' })
+      : new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
+
     return this.http.get<any>(url, { headers }).pipe(
       map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
     );
