@@ -65,8 +65,8 @@
           </div>
     </div>
     
-    <!-- Pagination -->
-    <div class="pagination-container" *ngIf="result">
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="result && filteredMatches.length > 0">
       <div class="pagination-bar">
         <div class="page-size-selector">
           <label for="pageSize">{{ TEXT.RESULTS_PER_PAGE }}</label>
@@ -142,7 +142,8 @@
         <!-- paging debug removed for production build -->
       </div>
     </div>
-    <div class="no-results" *ngIf="filteredMatches.length === 0 && result">
+
+    <div class="no-results" *ngIf="!isLoading && searchPerformed && ((searchQuery && searchQuery.trim().length > 0) || countryFilter) && filteredMatches.length === 0">
       <p>{{ TEXT.NO_RESULTS }}</p>
       <p *ngIf="countryFilter" class="filter-suggestion">
         Try removing the country filter or searching with different terms.

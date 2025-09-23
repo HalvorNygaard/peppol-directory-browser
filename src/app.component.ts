@@ -38,10 +38,12 @@ export class AppComponent implements OnInit {
   pendingSelectedId: string | null = null;
   // (Previously used to probe API last-result-index; removed.)
   // (No caching — pagination computed from each response's total-result-count.)
-  searchPerformed = true;
+  // Start with no search performed so we don't display 'no results' on load.
+  searchPerformed = false;
   filteredMatches: PeppolMatch[] = [];
   readonly TEXT = TEXT;
   readonly MAX_RETURNABLE_RESULTS = MAX_RETURNABLE_RESULTS;
+  isLoading = false;
 
   ngOnInit() {
     // Build ordered country lists: Europe first, then the rest
@@ -135,11 +137,13 @@ export class AppComponent implements OnInit {
     // through the dev proxy locally or AllOrigins in production).
 
     // Reuse the previously constructed `params` object for the service call
+    this.isLoading = true;
     this.peppol.fetchSearch(params).subscribe({
       next: (data) => {
         this.result = data;
         this.searchPerformed = true;
         this.applyFilters();
+        this.isLoading = false;
       },
       error: (err) => {
         // Surface a friendly message to the user; keep raw error out of UI.
@@ -147,6 +151,7 @@ export class AppComponent implements OnInit {
         this.searchPerformed = true;
         this.result = null;
         this.filteredMatches = [];
+        this.isLoading = false;
       }
     });
   }
