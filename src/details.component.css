@@ -77,11 +77,12 @@ details-content {
 .contact-line a:hover { text-decoration: underline }
 
 /* Compact contact: role, name, and contacts inline with tight spacing */
-.contact-card { padding: 2px 0; display: flex; align-items: center; gap: 8px }
-.contact-top { font-size: 14px; color: var(--muted); }
-.contact-top strong { color: var(--text); margin-left: 6px }
-.contact-bottom { font-size: 13px; color: var(--muted-weak); display: inline-flex; gap: 8px }
-.contact-bottom a { color: var(--accent) }
+.contact-card { padding: 2px 0; display: block }
+.contact-line { font-size: 14px; color: var(--text); display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; font-weight: 400 }
+.contact-line .sep { color: var(--text); margin: 0 2px; letter-spacing: 0 }
+.contact-line strong { margin: 0; font-weight: 400 }
+.contact-line .email { color: var(--text); text-decoration: none }
+.contact-line .email:hover { text-decoration: underline }
 
 /* Documents: tighter card and monospace scheme/value */
 .doc-card { padding: 10px 12px }
@@ -184,13 +185,13 @@ details-content {
 .doc-card .detail-row { margin: 6px 0; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
 
 /* Labels and values adjusted for better legibility */
-.doc-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--muted); }
-.doc-card .detail-row .value { font-size: 14px; color: var(--muted-weak) }
+.doc-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--text); }
+.doc-card .detail-row .value { font-size: 14px; color: var(--text) }
 
 /* Make entity detail rows follow the same spacing rules */
-.entity-card .detail-row { margin: 6px 0; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: center }
-.entity-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--muted); }
-.entity-card .detail-row .value { font-size: 14px; color: var(--muted-weak) }
+.entity-card .detail-row { margin: 6px 0; gap: 8px 12px; grid-template-columns: 140px 1fr; align-items: start }
+.entity-card .detail-row label { font-size: 13px; font-weight: 600; color: var(--text); }
+.entity-card .detail-row .value { font-size: 14px; color: var(--text) }
 
 .no-data {
   color: var(--muted-weak);

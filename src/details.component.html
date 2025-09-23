@@ -56,11 +56,19 @@
               <div class="value">
                 <div *ngFor="let c of ent.contacts" class="contact-card">
                   <ng-container *ngIf="formatContact(c) as cc">
-                    <div class="contact-top"><span class="muted">{{ cc.roleLabel }}</span><strong *ngIf="cc.displayName">{{ cc.displayName }}</strong></div>
-                    <div class="contact-bottom">
-                      <span *ngIf="cc.phoneHref"><a [href]="cc.phoneHref">📞 {{ cc.phoneDisplay }}</a></span>
-                      <span *ngIf="cc.phoneHref && cc.emailHref"> &middot; </span>
-                      <span *ngIf="cc.emailHref"><a [href]="cc.emailHref">✉️ {{ cc.emailDisplay }}</a></span>
+                    <div class="contact-line">
+                      <ng-container *ngIf="cc.roleLabel">{{ cc.roleLabel }}</ng-container>
+                      <ng-container *ngIf="cc.displayName || cc.phoneDisplay">
+                        <span class="sep"> - </span>
+                        <strong>
+                          {{ cc.displayName || 'Nessun Riferimento' }}
+                          <ng-container *ngIf="cc.phoneDisplay"> - {{ cc.phoneDisplay }}</ng-container>
+                        </strong>
+                      </ng-container>
+                      <ng-container *ngIf="cc.emailDisplay">
+                        <span class="sep"> - </span>
+                        <a class="email" [href]="cc.emailHref">{{ cc.emailDisplay }}</a>
+                      </ng-container>
                     </div>
                   </ng-container>
                 </div>

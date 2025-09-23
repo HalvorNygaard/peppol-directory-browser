@@ -26,7 +26,6 @@
   font-size: 1.375rem;
   font-weight: 600;
   color: var(--text);
-  padding-left: 4px; /* small left padding for title breathing room */
 }
 
 .header-title-wrap { display:flex; flex-direction:column }
