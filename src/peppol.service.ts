@@ -82,7 +82,14 @@ export class PeppolService {
     const url = this.buildSearchUrl(params);
     const headers = new HttpHeaders({ 'Accept': 'application/json' });
     return this.http.get<any>(url, { headers }).pipe(
-      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
+      map(raw => {
+        try {
+          console.log('Peppol raw response', { url, raw });
+        } catch (e) {
+          // ignore console errors
+        }
+        return this.unwrapProxyResponse<PeppolResponse>(raw);
+      })
     );
   }
 }

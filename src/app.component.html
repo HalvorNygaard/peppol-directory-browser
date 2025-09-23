@@ -79,33 +79,67 @@
         </div>
 
         <div class="pagination">
+          <button
+            class="page-btn"
+            [disabled]="currentPage === 0"
+            (click)="goToPage(0)"
+            aria-label="First page"
+            title="First">
+            <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <rect x="1.5" y="2" width="1" height="8" fill="currentColor"></rect>
+              <path d="M9 2 L5 6 L9 10 Z" fill="currentColor"></path>
+            </svg>
+          </button>
           <button 
             class="page-btn" 
-            [disabled]="(result['result-page-index'] ?? 0) === 0"
-            (click)="goToPage((result['result-page-index'] ?? 0) - 1)">
-            ← Previous
+            [disabled]="currentPage === 0"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous page"
+            title="Previous">
+            <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M8 2 L4 6 L8 10 Z" fill="currentColor"></path>
+            </svg>
           </button>
           <ng-container *ngIf="getPaginationPages().length > 0">
-            <button 
-              *ngFor="let page of getPaginationPages()"
-              class="page-btn"
-              [class.active]="page === (result['result-page-index'] ?? 0)"
-              (click)="goToPage(page)">
-              {{ page + 1 }}
-            </button>
+            <div class="page-numbers">
+              <button 
+                *ngFor="let page of getPaginationPages()"
+                class="page-btn"
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+                {{ page + 1 }}
+              </button>
+            </div>
           </ng-container>
 
           <button 
-            class="page-btn"
-            [disabled]="(result['result-page-index'] ?? 0) >= getTotalPages() - 1"
-            (click)="goToPage((result['result-page-index'] ?? 0) + 1)">
-            Next →
+            class="page-btn icon"
+            [disabled]="currentPage >= getTotalPages() - 1"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next page"
+            title="Next">
+            <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M4 2 L8 6 L4 10 Z" fill="currentColor"></path>
+            </svg>
+          </button>
+          <button
+            class="page-btn icon"
+            [disabled]="currentPage >= getTotalPages() - 1"
+            (click)="goToPage(getTotalPages() - 1)"
+            aria-label="Last page"
+            title="Last">
+            <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M3 2 L7 6 L3 10 Z" fill="currentColor"></path>
+              <rect x="9" y="2" width="1" height="8" fill="currentColor"></rect>
+            </svg>
           </button>
         </div>
 
         <div class="results-info" *ngIf="result">
-          <p>Showing {{ (result['first-result-index'] ?? 0) + 1 }}-{{ (result['last-result-index'] ?? 0) + 1 }} of {{ result['total-result-count'] ?? 0 }} results</p>
+          <p>{{ (result['first-result-index'] ?? 0) + 1 }}-{{ (result['last-result-index'] ?? 0) + 1 }} of {{ result['total-result-count'] ?? 0 }} results</p>
+          <div *ngIf="(result['total-result-count'] ?? 0) > MAX_RETURNABLE_RESULTS && currentPage >= getTotalPages() - 1" class="muted small">Note: displaying first {{ MAX_RETURNABLE_RESULTS }} results (server limit).</div>
         </div>
+        <!-- paging debug removed for production build -->
       </div>
     </div>
     <div class="no-results" *ngIf="filteredMatches.length === 0 && result">

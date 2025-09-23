@@ -38,3 +38,8 @@ export const QUERY_KEYS = {
 export const FLAG = {
   BASE_URL: 'https://flagcdn.com/w20'
 } as const;
+
+// Some upstream search services cap the number of returnable results
+// (commonly 1000). Use this constant in the client to avoid showing
+// unreachable trailing pages when the API advertises a larger total.
+export const MAX_RETURNABLE_RESULTS = 1000;

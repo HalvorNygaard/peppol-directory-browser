@@ -69,7 +69,7 @@
 
 
 /* Results */
-.results-list { margin-top: 12px; padding-top: 8px; padding-bottom: 24px }
+.results-list { margin-top: 12px; padding-top: 8px; padding-bottom: 16px }
 .match-cards { display: grid; gap: 8px }
 .match-card {
   border: 1px solid var(--card-border);
@@ -96,10 +96,15 @@
 .card-meta { font-size: 14px; color: var(--muted-weak); }
 
 /* Pagination */
-.pagination-container { margin-top: 6px }
-.pagination-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 6px }
+.pagination-container { margin-top: 8px }
+.pagination-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 8px }
+.pagination { display:flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap; flex-wrap:nowrap }
 .page-size-selector { display:flex; gap:8px; align-items:center }
-.page-btn { padding:6px 10px; border-radius:6px; border:1px solid var(--card-border); background:var(--surface) }
+.page-numbers { display:flex; gap:8px; align-items:center; white-space:nowrap }
+.page-btn { padding:6px 8px; border-radius:6px; border:1px solid var(--card-border); background:var(--surface); display:inline-flex; align-items:center; justify-content:center; height:36px; line-height:1 }
+.page-btn.icon { padding:6px; width:36px; min-width:36px }
+.page-btn:not(.icon) { min-width:34px; }
+ .page-btn svg { display:block; margin:0; }
 .page-btn.active { background:var(--accent); color:var(--surface); border-color:var(--accent) }
 
 /* Details */
@@ -199,86 +204,13 @@
   word-wrap: break-word;
 }
 
-.no-data {
-  color: var(--muted-weak);
-  font-style: italic;
-  margin: 0;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 0;
-  padding: 8px 0; /* smaller vertical footprint */
-}
-
-.pagination-container {
-  margin-top: 8px;
-}
-
-.pagination-container {
-  background: transparent;
-  border: none;
-}
-
-.pagination-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 6px 6px; /* tighten vertical space */
-}
-
-.page-size-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--muted-weak);
-}
-
-.page-size-selector select {
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--card-border);
-  background: var(--surface);
-  font-size: 14px;
-}
-
-.page-btn {
-  padding: 8px 12px;
-  border: 1px solid var(--card-border);
-  background-color: var(--surface);
-  color: var(--text);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  background-color: var(--section-surface);
-  border-color: var(--accent);
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-btn.active {
-  background-color: var(--accent);
-  color: var(--surface);
-  border-color: var(--accent);
-}
-
 .results-info {
   text-align: right;
   margin: 0;
   color: var(--muted-weak);
   font-size: 14px;
+  width: 220px; /* fixed width to stabilize pager layout */
+  flex: 0 0 220px;
 }
 
 .results-info p {
@@ -301,16 +233,10 @@
 
 @media (max-width: 768px) {
   .search-form { margin-bottom: 12px; align-items: stretch; flex-direction: column; gap: 12px; }
-  .pagination { flex-wrap: wrap; gap: 6px; }
+  .pagination { flex-wrap: wrap; gap: 6px; display:flex }
   .pagination-bar { gap: 8px; }
-  .page-btn { padding: 6px 10px; font-size: 12px; }
+  .page-btn { padding: 6px 0; font-size: 12px; width:40px; min-width:40px }
   .details-header { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
 
-/* Tighten pager spacing (override duplicates and ensure small footprint) */
-app-root .results-list { padding-bottom: 6px !important; }
-app-root .pagination-container { margin-top: 4px !important; margin-bottom: 4px !important; }
-app-root .pagination-bar { padding: 2px 6px !important; gap: 8px !important; }
-app-root .pagination { padding: 2px 0 !important; gap: 6px !important; }
-app-root .page-size-selector { margin: 0 !important; }
-app-root .page-btn { padding: 6px 8px !important; }
+/* end of file */
