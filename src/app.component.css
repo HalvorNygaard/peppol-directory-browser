@@ -52,6 +52,39 @@
   font-size: 15px;
 }
 
+/* Softer focus style to avoid an intense blue background */
+.search-input:focus {
+  outline: none;
+  border-color: rgba(47,79,191,0.22); /* gentle accent border */
+  box-shadow: 0 0 0 4px rgba(47,79,191,0.06); /* subtle halo */
+  background: var(--section-surface);
+}
+
+/* When the browser autofills fields (Chrome), override the yellow/blue fill with our surface color */
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--text) !important;
+  box-shadow: 0 0 0px 1000px var(--section-surface) inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+.search-input-wrap { position: relative }
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.clear-btn:hover { color: var(--text) }
+
 .country-group { flex: 0 0 auto; }
 .country-select {
   /* Use custom arrow so we can control spacing reliably across browsers */

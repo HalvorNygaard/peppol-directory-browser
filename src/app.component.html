@@ -14,13 +14,18 @@
   <!-- Search Form -->
   <div class="search-form" *ngIf="!selectedMatch">
     <div class="form-group search-group">
-      <input 
-        class="search-input"
-        type="text" 
-        id="searchQuery" 
-        [(ngModel)]="searchQuery" 
-        (keyup.enter)="search()"
-        placeholder="search..">
+      <div class="search-input-wrap">
+        <input 
+          class="search-input"
+          type="text" 
+          id="searchQuery" 
+          [(ngModel)]="searchQuery" 
+          (keyup.enter)="search()"
+          placeholder="search..">
+        <button *ngIf="searchQuery && searchQuery.length > 0" class="clear-btn" (click)="clearSearch()" aria-label="Clear search" title="Clear">
+          ✕
+        </button>
+      </div>
     </div>
 
     <div class="form-group country-group">
