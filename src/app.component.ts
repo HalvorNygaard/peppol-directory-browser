@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DetailsComponent } from './details.component';
 import { PeppolService } from './peppol.service';
@@ -20,10 +19,10 @@ import { COUNTRY_NAMES, EUROPE_ALPHA2 } from './app.constants';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly peppol = inject(PeppolService);
+  private readonly location = inject(Location);
   
   searchQuery = '';
   countryFilter = '';
@@ -34,6 +33,8 @@ export class AppComponent implements OnInit {
   otherCountries: Array<{ code: string; name: string }> = [];
   result: PeppolResponse | null = null;
   selectedMatch: PeppolMatch | null = null;
+  // When a participant is addressed via the URL path (e.g. /directory/0192:...)
+  isPathParticipant = false;
   // store a selected participant id if it arrives via URL before results are loaded
   pendingSelectedId: string | null = null;
   // (Previously used to probe API last-result-index; removed.)
@@ -46,6 +47,17 @@ export class AppComponent implements OnInit {
   isLoading = false;
 
   ngOnInit() {
+    // On initial load we may land on a detail path like '/directory/:id'.
+    // If so, fetch the participant immediately.
+    try {
+  const rawPath = (window.location.pathname || '').replace(/\/+$/,'');
+      const segments = rawPath.split('/').filter(Boolean);
+      if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
+        this.loadParticipantById(segments[1]);
+      }
+    } catch {
+      // ignore path parsing errors
+    }
     // Build ordered country lists: Europe first, then the rest
     const seen = new Set<string>();
     for (const code of EUROPE_ALPHA2) {
@@ -71,13 +83,29 @@ export class AppComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const nextQuery = params[QUERY_KEYS.Q] || '';
       const nextCountry = params[QUERY_KEYS.COUNTRY] || '';
+      // Redirect legacy query-based participant URLs to the canonical
+      // path-based form `/directory/<participant-id>` when no search
+      // query is present. Some external links may still use
+      // `?participant=<id>` — handle that here and bail out so the
+      // router receives the new path.
+      const legacyParticipant = params['participant'] || params['selected'] || null;
+      if (legacyParticipant && !nextQuery) {
+        try {
+          // Replace the current entry when doing an automatic redirect
+          // from a legacy query URL so the back button doesn't take the
+          // user back to the old query form.
+          this.router.navigateByUrl(`/directory/${legacyParticipant}`, { replaceUrl: true });
+        } catch (e) {
+          // ignore navigation errors
+        }
+        return;
+      }
   // The URL uses 1-based page numbers for human friendliness. Convert
   // to zero-based internal `currentPage` by subtracting 1. If no param
   // is present or parsing fails, default to 0.
   const rawPage = parseInt(params[QUERY_KEYS.RESULT_PAGE_INDEX], 10);
   const nextPage = Number.isNaN(rawPage) ? 0 : Math.max(0, rawPage - 1);
-      const nextPageSize = parseInt(params[QUERY_KEYS.RESULT_PAGE_COUNT], 10) || DEFAULTS.PAGE_SIZE;
-      const selectedId = params[QUERY_KEYS.SELECTED] || null;
+    const nextPageSize = parseInt(params[QUERY_KEYS.RESULT_PAGE_COUNT], 10) || DEFAULTS.PAGE_SIZE;
 
       // detect whether search parameters changed
       const searchParamsChanged = nextQuery !== lastQuery || nextCountry !== lastCountry || nextPage !== lastPage || nextPageSize !== lastPageSize;
@@ -88,19 +116,8 @@ export class AppComponent implements OnInit {
       this.currentPage = nextPage;
       this.pageSize = nextPageSize;
 
-      if (selectedId) {
-        const found = this.result?.matches?.find(m => m.participantID?.value === selectedId) || null;
-        if (found) {
-          this.selectedMatch = found;
-          this.pendingSelectedId = null;
-        } else {
-          this.selectedMatch = null;
-          this.pendingSelectedId = selectedId;
-        }
-      } else {
-        this.selectedMatch = null;
-        this.pendingSelectedId = null;
-      }
+      // Selection is handled via path-based '/directory/<id>' only.
+      // If a pendingSelectedId was set earlier (from path detection), we keep it.
 
       // Only perform search when search-relevant params changed or we have no cached result
       if (searchParamsChanged || !this.result) {
@@ -111,11 +128,79 @@ export class AppComponent implements OnInit {
         this.performSearch();
       }
     });
+
+    // Listen for router navigation events so path-only changes (for
+    // example Back/Forward navigation) update the component state. This
+    // ensures returning from `/directory/:id` to `/directory` clears the
+    // selected match, and direct navigation to `/directory/:id` loads it.
+    this.router.events.subscribe(evt => {
+      if (evt instanceof NavigationEnd) {
+        try {
+          const rawPath = (evt.urlAfterRedirects || evt.url || '').replace(/\/+$/,'');
+          const segments = rawPath.split('/').filter(Boolean);
+          if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
+            this.loadParticipantById(segments[1]);
+          } else if (segments.length === 1 && segments[0] === 'directory') {
+            this.selectedMatch = null;
+            this.pendingSelectedId = null;
+            this.isPathParticipant = false;
+            this.isLoading = false;
+          }
+        } catch (e) {
+          // ignore path parsing errors
+        }
+      }
+    });
+
+    // Also listen for native popstate events (browser back/forward).
+    // Some environments may not trigger Angular router navigations for
+    // certain history mutations; this ensures the UI state follows the
+    // URL regardless.
+    try {
+      window.addEventListener('popstate', () => {
+        try {
+          const rawPath = (window.location.pathname || '').replace(/\/+$/,'');
+          const segments = rawPath.split('/').filter(Boolean);
+          if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
+            this.loadParticipantById(segments[1]);
+          } else if (segments.length === 1 && segments[0] === 'directory') {
+            this.selectedMatch = null;
+            this.pendingSelectedId = null;
+            this.isPathParticipant = false;
+            this.isLoading = false;
+          }
+        } catch {
+          // ignore
+        }
+      });
+    } catch {
+      // ignore environments without window
+    }
+  }
+
+  private loadParticipantById(id: string) {
+    // Avoid refetch if same ID already selected
+    if (this.selectedMatch?.participantID?.value === id) return;
+    this.pendingSelectedId = id;
+    this.isPathParticipant = true;
+    this.isLoading = true;
+    this.peppol.fetchParticipant(id).subscribe({
+      next: (data) => {
+        this.selectedMatch = data?.matches?.[0] || null;
+        this.pendingSelectedId = null;
+        this.isLoading = false;
+      },
+      error: () => {
+        // Fail silently on fetch errors and clear pending state
+        this.pendingSelectedId = null;
+        this.isLoading = false;
+      }
+    });
   }
 
   search() {
     this.currentPage = 0; // Reset to first page on new search
-    this.updateUrl();
+    this.updateUrl({ push: true });
   }
 
   clearSearch() {
@@ -124,7 +209,7 @@ export class AppComponent implements OnInit {
     this.searchPerformed = false;
     this.result = null;
     this.filteredMatches = [];
-    this.updateUrl();
+    this.updateUrl({ push: true });
   }
 
   performSearch() {
@@ -196,7 +281,7 @@ export class AppComponent implements OnInit {
 
   goToPage(page: number) {
     this.currentPage = page;
-    this.updateUrl();
+    this.updateUrl({ push: true });
   }
 
   getPaginationPages(): number[] {
@@ -239,16 +324,32 @@ export class AppComponent implements OnInit {
 
   selectMatch(match: PeppolMatch) {
     this.selectedMatch = match;
-    // push selected id into URL so navigation history includes the details view
-    const qp: any = { [QUERY_KEYS.SELECTED]: match.participantID?.value ?? null };
-    this.router.navigate([], { relativeTo: this.route, queryParams: qp, queryParamsHandling: 'merge' });
+    const pid = match.participantID?.value ?? null;
+    if (pid) {
+      // Use router state to carry the 'from' URL. This is the normal Angular
+      // approach and lets `Location.back()` restore the previous route.
+      const from = typeof window !== 'undefined' ? (window.location.pathname + window.location.search) : undefined;
+      const extras: any = from ? { state: { from } } : {};
+      this.router.navigateByUrl(`/directory/${pid}`, extras);
+      this.isPathParticipant = true;
+    }
   }
 
   backToList() {
     this.selectedMatch = null;
     // remove selected from URL to return to list state in history
-    const qp: any = { [QUERY_KEYS.SELECTED]: null };
-    this.router.navigate([], { relativeTo: this.route, queryParams: qp, queryParamsHandling: 'merge' });
+    if (this.isPathParticipant) {
+      // Normal Angular navigation: try to go back using Location.back(). If
+      // that doesn't navigate within the SPA, fall back to `/directory`.
+      try {
+        this.location.back();
+      } catch (e) {
+        this.router.navigate(['/directory']);
+      }
+      this.isPathParticipant = false;
+    } else {
+      this.router.navigate(['/directory']);
+    }
   }
 
   getCompanyName(match: PeppolMatch): string {
@@ -305,7 +406,7 @@ export class AppComponent implements OnInit {
 
   onPageSizeChange() {
     this.currentPage = 0; // Reset to first page when changing page size
-    this.updateUrl();
+    this.updateUrl({ push: true });
   }
 
   clearCountryFilter() {
@@ -314,7 +415,7 @@ export class AppComponent implements OnInit {
     this.updateUrl();
   }
 
-  private updateUrl() {
+  private updateUrl(opts?: { push?: boolean }) {
     const queryParams: any = {
       [QUERY_KEYS.Q]: this.searchQuery.trim() ? this.searchQuery : null,
       [QUERY_KEYS.COUNTRY]: this.countryFilter && this.countryFilter.length ? this.countryFilter : null,
@@ -323,10 +424,26 @@ export class AppComponent implements OnInit {
       [QUERY_KEYS.RESULT_PAGE_COUNT]: this.pageSize !== DEFAULTS.PAGE_SIZE ? this.pageSize : null
     };
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge'
-    });
+    // If there's no active search and we have a participant selected (or pending),
+    // prefer a path-based URL like '/directory/<participant-id>'.
+    const participantId = this.selectedMatch?.participantID?.value || this.pendingSelectedId || null;
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      if (participantId) {
+        this.router.navigateByUrl(`/directory/${participantId}`);
+        return;
+      }
+    }
+
+  // Otherwise, always keep search state under the `/directory` base path
+  // so the SPA has a consistent canonical URL shape.
+  const qp = new URLSearchParams();
+    for (const k of Object.keys(queryParams)) {
+      const v = queryParams[k];
+      if (v !== null && v !== undefined) qp.append(k, String(v));
+    }
+    const qs = qp.toString();
+    const finalUrl = `/directory${qs ? `?${qs}` : ''}`;
+    const navigationExtras = opts && opts.push ? {} : { replaceUrl: true };
+    this.router.navigateByUrl(finalUrl, navigationExtras);
   }
 }

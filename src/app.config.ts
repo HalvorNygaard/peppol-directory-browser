@@ -30,7 +30,6 @@ export const LABELS = {
 export const QUERY_KEYS = {
   Q: 'q',
   COUNTRY: 'country',
-  SELECTED: 'selected',
   RESULT_PAGE_INDEX: 'rpi',
   RESULT_PAGE_COUNT: 'rpc'
 };

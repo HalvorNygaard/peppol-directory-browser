@@ -43,12 +43,11 @@ export class PeppolService {
   // the app doesn't need to know about the proxy implementation.
   unwrapProxyResponse<T>(maybeWrapped: any): T {
     if (!maybeWrapped) return maybeWrapped as T;
-    // Detect AllOrigins wrapper by presence of 'contents' string field
+    // Detect AllOrigins wrapper and return parsed original payload.
     if (typeof maybeWrapped.contents === 'string' && maybeWrapped.status) {
       try {
         return JSON.parse(maybeWrapped.contents) as T;
-      } catch (e) {
-        console.warn('Failed to parse proxied contents; returning raw wrapper', e);
+      } catch {
         return maybeWrapped as T;
       }
     }
@@ -79,17 +78,37 @@ export class PeppolService {
 
   // Fetch search results and return a typed observable with unwrapped body.
   fetchSearch(params: URLSearchParams): Observable<PeppolResponse> {
+    // Add a tiny cache-bust to avoid intermediate caches returning stale data.
+    try { params.append('_ts', Date.now().toString()); } catch (e) {}
     const url = this.buildSearchUrl(params);
-    const headers = new HttpHeaders({ 'Accept': 'application/json' });
+    const headers = new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
     return this.http.get<any>(url, { headers }).pipe(
-      map(raw => {
-        try {
-          console.log('Peppol raw response', { url, raw });
-        } catch (e) {
-          // ignore console errors
-        }
-        return this.unwrapProxyResponse<PeppolResponse>(raw);
-      })
+      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
+    );
+  }
+
+  /**
+   * Fetch a single participant using the participant query param.
+   * Example: search/1.0/json?participant=iso6523-actorid-upis::<orgid>:<register>
+   */
+  fetchParticipant(participantId: string): Observable<PeppolResponse> {
+    const params = new URLSearchParams();
+    // Some callers pass short form ids like '0192:922205426'. The upstream
+    // API expects a scheme-qualified identifier such as
+    // 'iso6523-actorid-upis::0192:922205426'. Detect simple ids and
+    // prepend the common Peppol actorid scheme when missing.
+    let normalized = participantId || '';
+    const hasScheme = /::/.test(normalized) || /^[a-z0-9-]+::/i.test(normalized);
+    if (!hasScheme && normalized) {
+      normalized = `iso6523-actorid-upis::${normalized}`;
+    }
+    params.append('participant', normalized);
+    // cache-bust
+    try { params.append('_ts', Date.now().toString()); } catch (e) {}
+    const url = this.buildSearchUrl(params);
+    const headers = new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
+    return this.http.get<any>(url, { headers }).pipe(
+      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
     );
   }
 }

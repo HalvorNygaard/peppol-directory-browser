@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 - Peppol Directory</title>
+    <script>
+      // GitHub Pages (and other static hosts) serve this file for unknown
+      // paths. We want the SPA to handle client-side routes like
+      // /directory/:id. This script replaces the current document with
+      // the SPA index while preserving the requested path so the router
+      // can initialize the correct view.
+      (function () {
+        try {
+          var reqPath = location.pathname + location.search + location.hash;
+          // Load the app index (index.html) via fetch and write it into
+          // the document, then update history to the requested path so
+          // Angular sees the correct URL.
+          fetch('/index.html').then(function (r) {
+            return r.text();
+          }).then(function (html) {
+            document.open();
+            document.write(html);
+            document.close();
+            // Push the requested path into the history so the SPA router sees it
+            history.replaceState(null, '', reqPath);
+          }).catch(function () {
+            // If fetch fails, fall back to a simple redirect to /directory
+            location.replace('/directory');
+          });
+        } catch (e) {
+          location.replace('/directory');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    Loading...
+  </body>
+  </html>

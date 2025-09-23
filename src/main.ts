@@ -8,7 +8,11 @@ import { HttpClientModule } from '@angular/common/http';
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter([
-      { path: '', component: AppComponent }
+      { path: '', redirectTo: 'directory', pathMatch: 'full' },
+      { path: 'directory', component: AppComponent },
+      { path: 'directory/:id', component: AppComponent },
+      // Redirect any unmatched paths to /directory so the SPA has a single canonical base
+      { path: '**', redirectTo: 'directory' }
     ]),
     importProvidersFrom(HttpClientModule)
   ]
