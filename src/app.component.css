@@ -101,10 +101,11 @@
 .pagination { display:flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap; flex-wrap:nowrap }
 .page-size-selector { display:flex; gap:8px; align-items:center }
 .page-numbers { display:flex; gap:8px; align-items:center; white-space:nowrap }
-.page-btn { padding:6px 8px; border-radius:6px; border:1px solid var(--card-border); background:var(--surface); display:inline-flex; align-items:center; justify-content:center; height:36px; line-height:1 }
+.page-btn { padding:6px 8px; border-radius:6px; border:1px solid var(--card-border); background:var(--surface); display:inline-flex; align-items:center; justify-content:center; height:36px; line-height:1; cursor: pointer }
 .page-btn.icon { padding:6px; width:36px; min-width:36px }
 .page-btn:not(.icon) { min-width:34px; }
- .page-btn svg { display:block; margin:0; }
+.page-btn svg { display:block; margin:0; }
+.page-btn:disabled, .page-btn.disabled { cursor: not-allowed; opacity: 0.6 }
 .page-btn.active { background:var(--accent); color:var(--surface); border-color:var(--accent) }
 
 /* Details */
