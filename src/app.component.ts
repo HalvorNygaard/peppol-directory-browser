@@ -119,6 +119,18 @@ export class AppComponent implements OnInit {
   }
 
   performSearch() {
+    // Avoid sending a search when there's no query and no country filter.
+    // The Peppol directory returns 404 for empty queries; skip the request
+    // and clear results so the UI doesn't show an erroneous 'no results'.
+    const hasQuery = !!this.searchQuery && this.searchQuery.trim().length > 0;
+    const hasCountry = !!this.countryFilter && this.countryFilter.length > 0;
+    if (!hasQuery && !hasCountry) {
+      this.searchPerformed = false;
+      this.result = null;
+      this.filteredMatches = [];
+      this.isLoading = false;
+      return;
+    }
     const params = new URLSearchParams();
 
     const searchTerms = this.searchQuery.trim() ? this.searchQuery.replace(/\s+/g, '+') : '';
