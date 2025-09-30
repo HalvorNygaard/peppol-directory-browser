@@ -38,6 +38,13 @@ export const FLAG = {
   BASE_URL: 'https://flagcdn.com/w20'
 } as const;
 
+// Public proxy configuration. Keep this decoupled so the service can
+// be configured to use different proxies or none at all.
+export const PROXY = {
+  ALLORIGINS_RAW: 'https://api.allorigins.win/raw?url=',
+  ALLORIGINS_GET: 'https://api.allorigins.win/get?url='
+} as const;
+
 // Some upstream search services cap the number of returnable results
 // (commonly 1000). Use this constant in the client to avoid showing
 // unreachable trailing pages when the API advertises a larger total.

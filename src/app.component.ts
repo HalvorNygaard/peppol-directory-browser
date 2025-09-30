@@ -6,6 +6,7 @@ import { DetailsComponent } from './details.component';
 import { PeppolService } from './peppol.service';
 import { PeppolResponse, PeppolMatch } from './peppol.types';
 import { API_BASE, API_PATH, DEFAULTS, QUERY_KEYS, TEXT, MAX_RETURNABLE_RESULTS } from './app.config';
+import { stripBaseHrefFromLocation, stripBaseHrefFromUrl } from './url.utils';
 import { PAGE_SIZES } from './design.tokens';
 import { COUNTRY_NAMES, EUROPE_ALPHA2 } from './app.constants';
 
@@ -45,12 +46,18 @@ export class AppComponent implements OnInit {
   readonly TEXT = TEXT;
   readonly MAX_RETURNABLE_RESULTS = MAX_RETURNABLE_RESULTS;
   isLoading = false;
+  // Simple history behavior: push by default, replace only when explicitly requested.
+
+  // Use shared utilities for robust handling of base href and URL parsing
+  // when the app is hosted under a repo subpath (e.g. GitHub Pages).
 
   ngOnInit() {
     // On initial load we may land on a detail path like '/directory/:id'.
-    // If so, fetch the participant immediately.
+    // If so, fetch the participant immediately. Strip any base-href (for
+    // example GitHub Pages repo subpaths) before parsing so the app can
+    // reliably detect '/directory/:id'.
     try {
-  const rawPath = (window.location.pathname || '').replace(/\/+$/,'');
+  const rawPath = stripBaseHrefFromLocation();
       const segments = rawPath.split('/').filter(Boolean);
       if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
         this.loadParticipantById(segments[1]);
@@ -136,8 +143,17 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(evt => {
       if (evt instanceof NavigationEnd) {
         try {
-          const rawPath = (evt.urlAfterRedirects || evt.url || '').replace(/\/+$/,'');
-          const segments = rawPath.split('/').filter(Boolean);
+          // Use the Router to parse the URL so NavigationEnd (including
+          // history popstate/back/forward) is handled consistently.
+          const navEnd = evt as NavigationEnd;
+          const urlToParse = navEnd.urlAfterRedirects || navEnd.url || this.router.url || '';
+          const stripped = stripBaseHrefFromUrl(urlToParse || '');
+          // Ensure the string starts with '/' for parseUrl
+          const normalized = stripped.startsWith('/') ? stripped : '/' + stripped;
+          const tree = this.router.parseUrl(normalized);
+          const primary = (tree.root && (tree.root.children as any)['primary']) || null;
+          const segments = primary && primary.segments ? primary.segments.map((s: any) => s.path) : [];
+
           if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
             this.loadParticipantById(segments[1]);
           } else if (segments.length === 1 && segments[0] === 'directory') {
@@ -152,30 +168,11 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // Also listen for native popstate events (browser back/forward).
-    // Some environments may not trigger Angular router navigations for
-    // certain history mutations; this ensures the UI state follows the
-    // URL regardless.
-    try {
-      window.addEventListener('popstate', () => {
-        try {
-          const rawPath = (window.location.pathname || '').replace(/\/+$/,'');
-          const segments = rawPath.split('/').filter(Boolean);
-          if (segments.length >= 2 && segments[0] === 'directory' && /:/.test(segments[1])) {
-            this.loadParticipantById(segments[1]);
-          } else if (segments.length === 1 && segments[0] === 'directory') {
-            this.selectedMatch = null;
-            this.pendingSelectedId = null;
-            this.isPathParticipant = false;
-            this.isLoading = false;
-          }
-        } catch {
-          // ignore
-        }
-      });
-    } catch {
-      // ignore environments without window
-    }
+    // Native popstate handling removed. Angular Router's NavigationEnd
+    // events are relied upon for history navigation. Modern browsers and
+    // Angular keep the Router in sync with history; removing the
+    // duplicate popstate handler avoids race conditions that previously
+    // broke back/forward navigation.
   }
 
   private loadParticipantById(id: string) {
@@ -330,7 +327,9 @@ export class AppComponent implements OnInit {
       // approach and lets `Location.back()` restore the previous route.
       const from = typeof window !== 'undefined' ? (window.location.pathname + window.location.search) : undefined;
       const extras: any = from ? { state: { from } } : {};
-      this.router.navigateByUrl(`/directory/${pid}`, extras);
+      // Use router.navigate to avoid subtle differences with navigateByUrl
+      // and ensure params are handled consistently.
+      this.router.navigate(['/directory', pid], extras);
       this.isPathParticipant = true;
     }
   }
@@ -412,7 +411,7 @@ export class AppComponent implements OnInit {
   clearCountryFilter() {
     this.countryFilter = '';
     this.currentPage = 0;
-    this.updateUrl();
+    this.updateUrl({ push: true });
   }
 
   private updateUrl(opts?: { push?: boolean }) {
@@ -424,26 +423,31 @@ export class AppComponent implements OnInit {
       [QUERY_KEYS.RESULT_PAGE_COUNT]: this.pageSize !== DEFAULTS.PAGE_SIZE ? this.pageSize : null
     };
 
-    // If there's no active search and we have a participant selected (or pending),
-    // prefer a path-based URL like '/directory/<participant-id>'.
-    const participantId = this.selectedMatch?.participantID?.value || this.pendingSelectedId || null;
-    if (!this.searchQuery || this.searchQuery.trim() === '') {
-      if (participantId) {
-        this.router.navigateByUrl(`/directory/${participantId}`);
-        return;
-      }
-    }
+    // Prefer path-based participant URLs when there's no active search.
 
   // Otherwise, always keep search state under the `/directory` base path
   // so the SPA has a consistent canonical URL shape.
-  const qp = new URLSearchParams();
+    // Build queryParam object for router.navigate
+    const qpObj: any = {};
     for (const k of Object.keys(queryParams)) {
       const v = queryParams[k];
-      if (v !== null && v !== undefined) qp.append(k, String(v));
+      if (v !== null && v !== undefined) qpObj[k] = v;
     }
-    const qs = qp.toString();
-    const finalUrl = `/directory${qs ? `?${qs}` : ''}`;
-    const navigationExtras = opts && opts.push ? {} : { replaceUrl: true };
-    this.router.navigateByUrl(finalUrl, navigationExtras);
+
+    // Decide whether to navigate to a participant path or to the directory with query params
+    const participantId = this.selectedMatch?.participantID?.value || this.pendingSelectedId || null;
+
+  // Default to pushing a new history entry so back/forward work as users expect.
+  const shouldReplace = opts && opts.push === false ? true : false;
+  const navigationExtras: any = { replaceUrl: shouldReplace };
+
+    if ((!this.searchQuery || this.searchQuery.trim() === '') && participantId) {
+      // navigate to /directory/:id
+      this.router.navigate(['/directory', participantId], navigationExtras);
+      return;
+    }
+
+    // navigate to /directory with query params
+    this.router.navigate(['/directory'], { ...navigationExtras, queryParams: qpObj });
   }
 }

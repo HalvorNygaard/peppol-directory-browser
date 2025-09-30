@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { COUNTRY_NAMES, EAS_CODES } from './app.constants';
-import { FLAG, DEFAULTS, TEXT, API_BASE, API_PATH } from './app.config';
+import { FLAG, DEFAULTS, TEXT, API_BASE, API_PATH, PROXY } from './app.config';
 import { PeppolResponse } from './peppol.types';
 
 @Injectable({ providedIn: 'root' })
@@ -68,13 +68,12 @@ export class PeppolService {
   buildSearchUrl(params: URLSearchParams): string {
     const paramsStr = params.toString();
     if (!this.isLocalOrigin()) {
-      // Use AllOrigins `/raw` endpoint when running from a static host
-      // (e.g. GitHub Pages). `/raw` forwards the original response body
-      // without wrapping it in an envelope, which avoids extra parsing.
-      // Keep `unwrapProxyResponse` as a resilient fallback for other
-      // proxy implementations that may wrap responses.
+      // Use the configured public proxy (AllOrigins by default) when running
+      // from a static host (e.g. GitHub Pages). Use the `/raw` variant so
+      // the original body is forwarded when possible; callers may retry
+      // with the wrapped `/get` variant if needed.
       const direct = `${API_BASE}?${paramsStr}`;
-      return `https://api.allorigins.win/raw?url=${encodeURIComponent(direct)}`;
+      return `${PROXY.ALLORIGINS_RAW}${encodeURIComponent(direct)}`;
     }
   // Local dev: return a same-origin path (API_PATH) so the Angular dev-server
   // proxy (configured in proxy.conf.json) can forward the request to the upstream API.
@@ -99,12 +98,16 @@ export class PeppolService {
     return this.http.get<any>(url, { headers }).pipe(
       map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
       catchError(err => {
-        // If the AllOrigins `/raw` endpoint failed (502/Bad Gateway or CORS),
-        // retry using the `/get` endpoint which returns a wrapped JSON
-        // envelope. `unwrapProxyResponse` knows how to extract the original
-        // payload from that envelope.
-        if (usingProxy && url.includes('api.allorigins.win/raw')) {
-          const alt = url.replace('/raw?url=', '/get?url=');
+        // If the configured AllOrigins `/raw` endpoint failed (502/Bad Gateway
+        // or CORS), retry using the `/get` endpoint which returns a wrapped
+        // JSON envelope. `unwrapProxyResponse` extracts the original payload.
+        if (usingProxy && url.includes(PROXY.ALLORIGINS_RAW)) {
+          const alt = url.replace(PROXY.ALLORIGINS_RAW, PROXY.ALLORIGINS_GET);
+          // Emit a console warning so production issues with the public proxy
+          // are visible in logs. Keep the behavior resilient by retrying
+          // with the wrapped `/get` endpoint which `unwrapProxyResponse`
+          // knows how to handle.
+          try { console.warn('AllOrigins /raw failed, retrying with /get for', url); } catch (_) {}
           return this.http.get<any>(alt, { headers }).pipe(
             map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
             catchError(e2 => throwError(() => e2))
@@ -142,8 +145,8 @@ export class PeppolService {
     return this.http.get<any>(url, { headers }).pipe(
       map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
       catchError(err => {
-        if (usingProxy && url.includes('api.allorigins.win/raw')) {
-          const alt = url.replace('/raw?url=', '/get?url=');
+        if (usingProxy && url.includes(PROXY.ALLORIGINS_RAW)) {
+          const alt = url.replace(PROXY.ALLORIGINS_RAW, PROXY.ALLORIGINS_GET);
           return this.http.get<any>(alt, { headers }).pipe(
             map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
             catchError(e2 => throwError(() => e2))
