@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { COUNTRY_NAMES, EAS_CODES } from './app.constants';
 import { FLAG, DEFAULTS, TEXT, API_BASE, API_PATH } from './app.config';
 import { PeppolResponse } from './peppol.types';
@@ -97,7 +97,21 @@ export class PeppolService {
       : new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
 
     return this.http.get<any>(url, { headers }).pipe(
-      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
+      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
+      catchError(err => {
+        // If the AllOrigins `/raw` endpoint failed (502/Bad Gateway or CORS),
+        // retry using the `/get` endpoint which returns a wrapped JSON
+        // envelope. `unwrapProxyResponse` knows how to extract the original
+        // payload from that envelope.
+        if (usingProxy && url.includes('api.allorigins.win/raw')) {
+          const alt = url.replace('/raw?url=', '/get?url=');
+          return this.http.get<any>(alt, { headers }).pipe(
+            map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
+            catchError(e2 => throwError(() => e2))
+          );
+        }
+        return throwError(() => err);
+      })
     );
   }
 
@@ -126,7 +140,17 @@ export class PeppolService {
       : new HttpHeaders({ 'Accept': 'application/json', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
 
     return this.http.get<any>(url, { headers }).pipe(
-      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw))
+      map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
+      catchError(err => {
+        if (usingProxy && url.includes('api.allorigins.win/raw')) {
+          const alt = url.replace('/raw?url=', '/get?url=');
+          return this.http.get<any>(alt, { headers }).pipe(
+            map(raw => this.unwrapProxyResponse<PeppolResponse>(raw)),
+            catchError(e2 => throwError(() => e2))
+          );
+        }
+        return throwError(() => err);
+      })
     );
   }
 }
