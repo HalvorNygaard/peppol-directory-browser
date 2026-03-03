@@ -1,7 +1,11 @@
 {
-  "/search": {
+  "/api": {
     "target": "https://directory.peppol.eu",
-    "secure": false,
-    "changeOrigin": true
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "logLevel": "debug"
   }
 }

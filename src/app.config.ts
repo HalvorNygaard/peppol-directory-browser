@@ -1,48 +1,47 @@
-export const API_BASE = 'https://directory.peppol.eu/search/1.0/json';
-// Same-origin path derived from API_BASE (used by the dev-server proxy)
-export const API_PATH = API_BASE.replace(/^https?:\/\/[^/]+/, '');
+const API_BASE_URL = "https://directory.peppol.eu/search/1.0/json";
+const LOCAL_API_BASE = "/api/search/1.0/json";
 
-import { DEFAULT_PAGE_SIZE } from './design.tokens';
+export const API_BASE = (() => {
+  if (typeof window === "undefined") return API_BASE_URL;
+  const host = window.location.hostname;
+  const isLocalhost = host === "localhost" || host === "127.0.0.1";
+  return isLocalhost ? LOCAL_API_BASE : API_BASE_URL;
+})();
+
+import { DEFAULT_PAGE_SIZE } from "./design.tokens";
 
 export const DEFAULTS = {
   PAGE_SIZE: DEFAULT_PAGE_SIZE,
-  UNKNOWN: 'N/A'
+  UNKNOWN: "N/A",
 };
 
 export const TEXT = {
-  UNKNOWN_REGISTER: 'Unknown Register',
-  APP_TITLE: 'Peppol Directory Search',
-  ALL_COUNTRIES: 'All Countries',
-  RESULTS_PER_PAGE: 'Results per page:',
-  NO_RESULTS: 'No results found',
-  NO_DOCUMENT_TYPES: 'No document types available',
-  CLEAR_COUNTRY: 'Clear country filter',
-  WEBSITES: 'Websites'
+  UNKNOWN_REGISTER: "Unknown Register",
+  APP_TITLE: "Peppol Directory Search",
+  ALL_COUNTRIES: "All Countries",
+  RESULTS_PER_PAGE: "Results per page:",
+  NO_RESULTS: "No results found",
+  NO_DOCUMENT_TYPES: "No document types available",
+  CLEAR_COUNTRY: "Clear country filter",
+  WEBSITES: "Websites",
 };
 export const LABELS = {
-  ORGANIZATION_ID: 'Organization ID',
-  REGISTER: 'Register',
-  COUNTRY: 'Country',
-  REGISTERED: 'Date Registered'
+  ORGANIZATION_ID: "Organization ID",
+  REGISTER: "Register",
+  COUNTRY: "Country",
+  REGISTERED: "Date Registered",
 };
 // add specific UI keys below if needed
 
 export const QUERY_KEYS = {
-  Q: 'q',
-  COUNTRY: 'country',
-  RESULT_PAGE_INDEX: 'rpi',
-  RESULT_PAGE_COUNT: 'rpc'
+  Q: "q",
+  COUNTRY: "country",
+  RESULT_PAGE_INDEX: "rpi",
+  RESULT_PAGE_COUNT: "rpc",
 };
 
 export const FLAG = {
-  BASE_URL: 'https://flagcdn.com/w20'
-} as const;
-
-// Public proxy configuration. Keep this decoupled so the service can
-// be configured to use different proxies or none at all.
-export const PROXY = {
-  ALLORIGINS_RAW: 'https://api.allorigins.win/raw?url=',
-  ALLORIGINS_GET: 'https://api.allorigins.win/get?url='
+  BASE_URL: "https://flagcdn.com/w20",
 } as const;
 
 // Some upstream search services cap the number of returnable results

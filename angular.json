@@ -25,15 +25,13 @@
               "sourceMap": false
             }
           },
-            "options": {
-            "assets": [
-              "src/assets"
-            ],
+          "options": {
+            "assets": ["src/assets"],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "outputPath": "docs",
             "scripts": [],
-            "styles": ["src/global_styles.css", "src/app.component.css"],
+            "styles": ["src/global_styles.css"],
             "tsConfig": "tsconfig.app.json"
           }
         },

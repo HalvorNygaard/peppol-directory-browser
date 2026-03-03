@@ -1,62 +1,131 @@
-/* Minimal global theme inspired by Notion / Linear */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
-:root{
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --section-surface: #fbfbfd;
-  --muted: #4b5563; /* stronger muted text */
-  --muted-weak: #556071; /* slightly darker - improved readability */
-  --text: #0f1724;
-  --accent: #2f4fbf; /* slightly more muted blue (less purple) */
-  --card-shadow: 0 8px 20px rgba(15,23,36,0.05);
-  --card-shadow-weak: 0 4px 12px rgba(15,23,36,0.035);
-  --card-shadow-subtle: 0 2px 8px rgba(15,23,36,0.04);
-  --card-border-soft: rgba(15,23,36,0.04);
-  --subsection-shadow: 0 6px 18px rgba(15,23,36,0.045);
-  --item-shadow: 0 8px 24px rgba(15,23,36,0.055);
-  /* lighter subsection surface for subtler separation */
-  --subsection-surface: #fcfcfd;
-  --card-border: rgba(15,23,36,0.06);
-  --radius: 10px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-canvas: #f6f7f9;
+    --color-surface: #ffffff;
+    --color-section: #fbfbfd;
+    --color-ink: #0f1724;
+    --color-muted: #4b5563;
+    --color-muted-weak: #556071;
+    --color-accent: #2f4fbf;
+    --shadow-card: 0 8px 20px rgba(15, 23, 36, 0.05);
+    --shadow-card-soft: 0 4px 12px rgba(15, 23, 36, 0.035);
+    --shadow-card-subtle: 0 2px 8px rgba(15, 23, 36, 0.04);
+    --radius-card: 12px;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family:
+      "Manrope",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family:
+      "Space Grotesk",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  button {
+    font-family: inherit;
+  }
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
 }
 
-html, body {
-  height: 100%;
+@layer components {
+  .bg-orbit {
+    background:
+      radial-gradient(520px 260px at 10% -10%, rgba(47, 79, 191, 0.14), transparent 60%),
+      radial-gradient(420px 220px at 100% 0%, rgba(15, 23, 36, 0.08), transparent 55%),
+      linear-gradient(120deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.65));
+  }
+
+  .card-surface {
+    background: var(--color-surface);
+    border: 1px solid rgba(15, 23, 36, 0.06);
+    box-shadow: var(--shadow-card-soft);
+    border-radius: var(--radius-card);
+  }
+
+  .card-hover {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .pill {
+    border-radius: 999px;
+    padding: 2px 10px;
+    background: rgba(47, 79, 191, 0.08);
+    color: var(--color-accent);
+    font-size: 12px;
+    font-weight: 600;
+  }
 }
 
-body {
-  margin: 0;
-  font-family: 'Roboto', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial;
-  background: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  padding: 20px 24px 16px; /* match top spacing with a 16px bottom safe-area */
+@layer utilities {
+  .text-muted {
+    color: var(--color-muted);
+  }
+  .text-muted-weak {
+    color: var(--color-muted-weak);
+  }
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-card-soft {
+    box-shadow: var(--shadow-card-soft);
+  }
+  .shadow-card-subtle {
+    box-shadow: var(--shadow-card-subtle);
+  }
+  .bg-surface {
+    background: var(--color-surface);
+  }
+  .bg-section {
+    background: var(--color-section);
+  }
 }
-
-.container {
-  max-width: 1000px;
-  margin: 16px auto 24px; /* top margin so container doesn't touch the body, bottom margin preserved */
-  background: var(--surface);
-  padding: 16px; /* reduced padding for tighter layout */
-  border-radius: var(--radius);
-  box-shadow: var(--card-shadow);
-}
-
-/* Ensure the app root reserves a small safe-area at the bottom of the viewport
-   so content never sits flush with OS taskbars or docked UI. This helps on
-   short viewports and when parent layouts stretch to full height. */
-app-root {
-  display: block;
-  padding-bottom: 20px; /* small, consistent safe-area */
-}
-
-.muted { color: var(--muted); }
-
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-button { font-family: inherit; }
-
-input, select, textarea { font-family: inherit; }

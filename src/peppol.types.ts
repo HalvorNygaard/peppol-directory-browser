@@ -1,8 +1,20 @@
-export interface Identifier { value: string; scheme?: string }
+export interface Identifier {
+  value: string;
+  scheme?: string;
+}
 
-export interface NameEntry { name?: string; value?: string; language?: string }
+export interface NameEntry {
+  name?: string;
+  value?: string;
+  language?: string;
+}
 
-export interface ContactEntry { type?: string; name?: string; phone?: string; email?: string }
+export interface ContactEntry {
+  type?: string;
+  name?: string;
+  phone?: string;
+  email?: string;
+}
 
 export interface EntityEntry {
   name?: NameEntry[];
@@ -18,9 +30,15 @@ export interface EntityEntry {
   regDate?: string;
 }
 
-export interface DocTypeEntry { scheme?: string; value?: string }
+export interface DocTypeEntry {
+  scheme?: string;
+  value?: string;
+}
 
-export interface ParticipantId { scheme?: string; value?: string }
+export interface ParticipantId {
+  scheme?: string;
+  value?: string;
+}
 
 export interface PeppolMatch {
   participantID?: ParticipantId;
@@ -30,14 +48,14 @@ export interface PeppolMatch {
 
 export interface PeppolResponse {
   version?: string;
-  'total-result-count'?: number;
-  'used-result-count'?: number;
-  'result-page-index'?: number;
-  'result-page-count'?: number;
-  'first-result-index'?: number;
-  'last-result-index'?: number;
-  'query-terms'?: string;
-  'creation-dt'?: string;
+  "total-result-count"?: number;
+  "used-result-count"?: number;
+  "result-page-index"?: number;
+  "result-page-count"?: number;
+  "first-result-index"?: number;
+  "last-result-index"?: number;
+  "query-terms"?: string;
+  "creation-dt"?: string;
   matches?: PeppolMatch[];
 }
 

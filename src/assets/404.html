@@ -9,14 +9,26 @@
       (function () {
         try {
           var reqPath = location.pathname + location.search + location.hash;
-          fetch('/index.html').then(function (r) { return r.text(); }).then(function (html) {
-            document.open(); document.write(html); document.close(); history.replaceState(null, '', reqPath);
-          }).catch(function () { location.replace('/directory'); });
-        } catch (e) { location.replace('/directory'); }
+          fetch("/index.html")
+            .then(function (r) {
+              return r.text();
+            })
+            .then(function (html) {
+              document.open();
+              document.write(html);
+              document.close();
+              history.replaceState(null, "", reqPath);
+            })
+            .catch(function () {
+              location.replace("/directory");
+            });
+        } catch (e) {
+          location.replace("/directory");
+        }
       })();
     </script>
   </head>
   <body>
     Loading...
   </body>
-  </html>
+</html>

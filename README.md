@@ -1,5 +1,7 @@
 # Peppol Directory Browser
 
+Angular 21.2 + Tailwind CSS single-page app for searching the Peppol Directory.
+
 This Angular app is configured to publish to GitHub Pages from the `docs/` folder.
 
 Continuous deployment
@@ -20,4 +22,4 @@ After a successful workflow run, enable Pages (if not already) in repository Set
 
 Important note about API requests
 
-- This project currently routes API requests through the public CORS proxy `https://api.allorigins.win` when the site is served from a non-localhost origin (for example, GitHub Pages). This is a runtime workaround to avoid CORS restrictions when the upstream API does not return permissive CORS headers.
+- The app now calls `https://directory.peppol.eu` directly. If the upstream API does not allow cross-origin requests from your deployment origin (for example, GitHub Pages), you will need to host a small backend proxy or serve from an origin with permissive CORS. The previous public-proxy workaround has been removed.

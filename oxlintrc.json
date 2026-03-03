@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "typescript", "oxc"],
+  "jsPlugins": ["@angular-eslint/eslint-plugin"],
+  "env": {
+    "browser": true
+  },
+  "categories": {
+    "correctness": "error",
+    "perf": "warn",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "eslint/no-unused-vars": "error"
+  },
+  "ignorePatterns": ["dist/**", "node_modules/**", "src/assets/**"]
+}

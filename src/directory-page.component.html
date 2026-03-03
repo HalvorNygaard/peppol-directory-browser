@@ -1,0 +1,200 @@
+<main class="min-h-screen bg-orbit px-6 py-8 sm:px-10">
+  <section class="mx-auto w-full max-w-5xl">
+    <header class="card-surface shadow-card px-6 py-6 sm:px-8">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex items-start gap-3">
+          @if (selectedMatch()) {
+            <button
+              class="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-muted-weak transition hover:bg-black/5"
+              (click)="backToList()"
+              aria-label="Back"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+          }
+          <div>
+            <h1 class="text-2xl font-semibold text-ink sm:text-3xl">
+              {{ selectedMatch() ? getCompanyName(selectedMatch()!) : TEXT.APP_TITLE }}
+            </h1>
+            @if (selectedMatch()) {
+              <p class="mt-1 text-sm text-muted-weak">
+                {{ getCompanyLabel(selectedMatch()!) }}
+              </p>
+            }
+          </div>
+        </div>
+        <div></div>
+      </div>
+
+      @if (!selectedMatch()) {
+        <div class="mt-6 grid gap-4 sm:grid-cols-[1fr_220px]">
+          <div class="relative">
+            <input
+              class="w-full rounded-xl border border-black/5 bg-white px-4 py-3 text-sm shadow-card-subtle outline-none transition focus:border-accent focus:ring-4 focus:ring-[rgba(47,79,191,0.12)]"
+              type="text"
+              id="searchQuery"
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
+              (keyup.enter)="search()"
+              placeholder="Search company name, ID, or keyword"
+            />
+            @if (searchQuery().length > 0) {
+              <button
+                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-xs text-muted transition hover:text-ink"
+                (click)="clearSearch()"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            }
+          </div>
+          <div class="relative">
+            <select
+              id="countryFilter"
+              class="w-full appearance-none rounded-xl border border-black/5 bg-white px-4 py-3 text-sm shadow-card-subtle outline-none transition focus:border-accent focus:ring-4 focus:ring-[rgba(47,79,191,0.12)]"
+              [ngModel]="countryFilter()"
+              (ngModelChange)="countryFilter.set($event); search()"
+            >
+              <option value="">{{ TEXT.ALL_COUNTRIES }}</option>
+              <optgroup label="Europe">
+                <option *ngFor="let c of europeCountries" [value]="c.code">{{ c.name }}</option>
+              </optgroup>
+              <option disabled>────────────</option>
+              <optgroup label="Rest of world">
+                <option *ngFor="let c of otherCountries" [value]="c.code">{{ c.name }}</option>
+              </optgroup>
+            </select>
+            <span
+              class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted"
+              >▾</span
+            >
+          </div>
+        </div>
+      }
+    </header>
+
+    @if (searchPerformed() && !selectedMatch()) {
+      <section class="mt-6 grid gap-4">
+        @if (matches().length > 0) {
+          <div class="grid gap-3">
+            @for (match of matches(); track match.participantID?.value) {
+              <article
+                class="card-surface card-hover cursor-pointer px-5 py-4"
+                (click)="selectMatch(match)"
+              >
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <h2 class="text-base font-semibold text-ink">
+                      {{ getCompanyName(match) }}
+                    </h2>
+                    <span class="text-xs text-muted-weak">{{ getRegDate(match) }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm text-muted">
+                    <img
+                      [src]="getFlagUrl(getCountryCode(match)) | async"
+                      [alt]="getCountryCode(match) + ' flag'"
+                      class="h-4 w-6 rounded-sm border border-black/10"
+                    />
+                    <span>{{ getCountryName(getCountryCode(match)) }}</span>
+                  </div>
+                  <p class="text-sm text-muted-weak">{{ getCompanyLabel(match) }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+        @if (result() && matches().length > 0) {
+          <div class="card-surface px-5 py-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex items-center gap-3 text-sm">
+                <label for="pageSize" class="text-muted">{{ TEXT.RESULTS_PER_PAGE }}</label>
+                <select
+                  id="pageSize"
+                  class="rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  [ngModel]="pageSize()"
+                  (ngModelChange)="pageSize.set($event); onPageSizeChange()"
+                >
+                  <option *ngFor="let s of pageSizes" [value]="s">{{ s }}</option>
+                </select>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  class="rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  [disabled]="currentPage() === 0"
+                  (click)="goToPage(0)"
+                >
+                  First
+                </button>
+                <button
+                  class="rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  [disabled]="currentPage() === 0"
+                  (click)="goToPage(currentPage() - 1)"
+                >
+                  Prev
+                </button>
+                <div class="flex items-center gap-2">
+                  @for (page of paginationPages(); track page) {
+                    <button
+                      class="rounded-lg border px-3 py-2 text-sm"
+                      [class.border-accent]="page === currentPage()"
+                      [class.bg-accent]="page === currentPage()"
+                      [class.text-white]="page === currentPage()"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page + 1 }}
+                    </button>
+                  }
+                </div>
+                <button
+                  class="rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  [disabled]="currentPage() >= totalPages() - 1"
+                  (click)="goToPage(currentPage() + 1)"
+                >
+                  Next
+                </button>
+                <button
+                  class="rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  [disabled]="currentPage() >= totalPages() - 1"
+                  (click)="goToPage(totalPages() - 1)"
+                >
+                  Last
+                </button>
+              </div>
+              <div class="text-sm text-muted-weak">
+                {{ firstResultIndex() }}-{{ lastResultIndex() }} of {{ totalResults() }} results
+                @if (totalResults() > MAX_RETURNABLE_RESULTS && currentPage() >= totalPages() - 1) {
+                  <span class="ml-2 text-xs text-muted"
+                    >Note: showing first {{ MAX_RETURNABLE_RESULTS }} results.</span
+                  >
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (
+          !isLoading() &&
+          searchPerformed() &&
+          (searchQuery().trim().length > 0 || countryFilter()) &&
+          matches().length === 0
+        ) {
+          <div class="card-surface px-5 py-4 text-sm text-muted">
+            <p>{{ TEXT.NO_RESULTS }}</p>
+            @if (countryFilter()) {
+              <p class="mt-2 text-muted-weak">
+                Try removing the country filter or searching with different terms.
+              </p>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    @if (selectedMatch()) {
+      <div class="mt-6">
+        <app-details [match]="selectedMatch()" (back)="backToList()"></app-details>
+      </div>
+    }
+  </section>
+</main>
