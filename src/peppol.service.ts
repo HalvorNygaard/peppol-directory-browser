@@ -54,8 +54,6 @@ export class PeppolService {
     const url = this.buildSearchUrl(params);
     const headers = new HttpHeaders({
       Accept: "application/json",
-      "Cache-Control": "no-store",
-      Pragma: "no-cache",
     });
 
     return this.http.get<PeppolResponse>(url, { headers });
@@ -84,8 +82,6 @@ export class PeppolService {
     const url = this.buildSearchUrl(params);
     const headers = new HttpHeaders({
       Accept: "application/json",
-      "Cache-Control": "no-store",
-      Pragma: "no-cache",
     });
 
     return this.http.get<PeppolResponse>(url, { headers });
