@@ -4,19 +4,12 @@ Angular 21.2 + Tailwind CSS single-page app for searching the Peppol Directory.
 
 This Angular app is configured to publish to GitHub Pages via GitHub Actions.
 
-Continuous deployment
-
-- A GitHub Actions workflow (`.github/workflows/gh-pages.yml`) builds the app and publishes the `docs/browser` output automatically on pushes to `main`.
-- Do not commit generated build artifacts (`docs/`) — the workflow creates and publishes them for you.
-
 Manual build (for testing)
 
 ```pwsh
 npm install
 npm run build:ghpages
 ```
-
-After a successful workflow run, enable Pages (if not already) in repository Settings → Pages and set the source to GitHub Actions.
 
 Important note about API requests
 
