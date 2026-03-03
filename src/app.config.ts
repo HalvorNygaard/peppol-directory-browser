@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://directory.peppol.eu/search/1.0/json";
+const API_BASE_URL = "https://peppol-proxy.halvor-nygaard.workers.dev";
 const LOCAL_API_BASE = "/api/search/1.0/json";
 
 export const API_BASE = (() => {
